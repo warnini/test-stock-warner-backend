@@ -5,9 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Caisse - Compta Eira</title>
 
-  <!-- Feuille de style -->
+  <!-- Feuilles de style -->
   <link rel="stylesheet" href="css/caisse.css" />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+
+  <!-- Supabase -->
+  <script type="module" src="js/caisse.js" defer></script>
 
   <style>
     body {
@@ -70,10 +73,10 @@
     <h1>Connexion Employé</h1>
     <input type="text" id="login-pseudo" placeholder="Pseudo">
     <input type="password" id="login-mdp" placeholder="Mot de passe">
-    <button id="btn-login">Se connecter</button>
+    <button id="login-btn">Se connecter</button>
   </div>
 
-  <!-- Interface de caisse (masquée par défaut) -->
+  <!-- Interface de caisse -->
   <div id="caisse-container" class="container" style="display: none;">
     <h1>Interface de Caisse</h1>
     <div id="liste-produits"></div>
@@ -82,7 +85,5 @@
     <button id="valider-vente">Valider la vente</button>
   </div>
 
-  <!-- Script JS principal en module -->
-  <script type="module" src="js/caisse.js"></script>
 </body>
 </html>
