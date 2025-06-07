@@ -1,106 +1,109 @@
-console.log("JS chargé !");
+const supabaseUrl = "https://<TON_URL_SUPABASE>"; // ← Remplace
+const supabaseKey = "<TA_CLÉ_SUPABASE>"; // ← Remplace
+const supabase = supabase.createClient(supabaseUrl, supabaseKey);
 
 const produitsContainer = document.getElementById("liste-produits");
 const totalElement = document.getElementById("total");
 const validerBtn = document.getElementById("valider-vente");
 const ajouterBtn = document.getElementById("ajouter-produit");
 
-// Stockage temporaire des produits du backend
-let listeProduits = [];
+// Connexion utilisateur
+window.login = async function () {
+  const pseudo = document.getElementById("login-pseudo").value;
+  const mot_de_passe = document.getElementById("login-mdp").value;
 
-// Récupère les produits depuis le backend
-fetch("https://test-stock-warner-backend.onrender.com/produits") // Remplace bien l'URL par ton backend
-  .then((res) => res.json())
-  .then((produits) => {
-    listeProduits = produits;
-    ajouterProduit(); // ajoute une ligne par défaut au chargement
-  })
-  .catch((err) => {
-    console.error("Erreur chargement produits :", err);
-  });
+  const { data, error } = await supabase
+    .from("utilisateurs")
+    .select("*")
+    .eq("pseudo", pseudo)
+    .single();
 
-// Fonction qui ajoute dynamiquement une ligne produit
-function ajouterProduit() {
-  const ligne = document.createElement("div");
-  ligne.className = "ligne-produit";
+  if (error || !data) return alert("Utilisateur introuvable.");
+  if (data.mot_de_passe !== mot_de_passe) return alert("Mot de passe incorrect.");
 
-  const select = document.createElement("select");
-  select.innerHTML = listeProduits.map(
-    (p) => `<option value="${p.id}" data-prix="${p.prix}">${p.nom} (${p.prix} $)</option>`
-  ).join("");
+  // Stocker ID employé
+  localStorage.setItem("employe_id", data.id);
+  document.getElementById("login-container").style.display = "none";
+  document.getElementById("caisse-container").style.display = "block";
 
-  const inputQuantite = document.createElement("input");
-  inputQuantite.type = "number";
-  inputQuantite.min = "1";
-  inputQuantite.value = "1";
+  chargerProduits();
+};
 
-  // Met à jour le total si quantité ou produit change
-  select.addEventListener("change", mettreAJourTotal);
-  inputQuantite.addEventListener("input", mettreAJourTotal);
+// Charger produits depuis backend
+function chargerProduits() {
+  fetch("https://test-stock-warner-backend.onrender.com/produits")
+    .then((res) => res.json())
+    .then((produits) => {
+      produitsContainer.innerHTML = "";
+      ajouterLigneProduit(produits);
 
-  ligne.appendChild(select);
-  ligne.appendChild(inputQuantite);
-  produitsContainer.appendChild(ligne);
-
-  mettreAJourTotal();
+      ajouterBtn.addEventListener("click", () => {
+        ajouterLigneProduit(produits);
+      });
+    });
 }
 
-// Fonction de calcul du total
-function mettreAJourTotal() {
-  const lignes = produitsContainer.querySelectorAll(".ligne-produit");
-  let total = 0;
+function ajouterLigneProduit(produits) {
+  const div = document.createElement("div");
+  div.className = "ligne-produit";
 
-  lignes.forEach((ligne) => {
+  const select = document.createElement("select");
+  const input = document.createElement("input");
+  input.type = "number";
+  input.min = "0";
+  input.value = "0";
+
+  produits.forEach((p) => {
+    const option = document.createElement("option");
+    option.value = p.id;
+    option.textContent = `${p.nom} (${p.prix} $)`;
+    option.dataset.prix = p.prix;
+    select.appendChild(option);
+  });
+
+  select.addEventListener("change", calculerTotal);
+  input.addEventListener("input", calculerTotal);
+  div.appendChild(select);
+  div.appendChild(input);
+  produitsContainer.appendChild(div);
+  calculerTotal();
+}
+
+function calculerTotal() {
+  let total = 0;
+  produitsContainer.querySelectorAll(".ligne-produit").forEach((ligne) => {
     const select = ligne.querySelector("select");
     const input = ligne.querySelector("input");
     const prix = parseFloat(select.selectedOptions[0].dataset.prix || 0);
-    const quantite = parseInt(input.value || 0);
-    total += prix * quantite;
+    total += prix * parseInt(input.value || 0);
   });
-
   totalElement.textContent = total.toFixed(2);
 }
 
-// Événement bouton "+ Ajouter un produit"
-ajouterBtn.addEventListener("click", ajouterProduit);
-
-// Événement bouton "Valider la vente"
 validerBtn.addEventListener("click", () => {
-  const utilisateur_id = prompt("Entrez l'ID de l'employé :").trim();
-  if (!utilisateur_id) return alert("ID employé requis.");
+  const employe_id = localStorage.getItem("employe_id");
+  if (!employe_id) return alert("Non connecté");
 
   const produits = [];
-  const lignes = produitsContainer.querySelectorAll(".ligne-produit");
-
-  lignes.forEach((ligne) => {
-    const select = ligne.querySelector("select");
-    const input = ligne.querySelector("input");
-    const quantite = parseInt(input.value || 0);
-    const id = parseInt(select.value);
-
-    if (quantite > 0) {
-      produits.push({ id, quantite });
-    }
+  produitsContainer.querySelectorAll(".ligne-produit").forEach((ligne) => {
+    const id = parseInt(ligne.querySelector("select").value);
+    const qte = parseInt(ligne.querySelector("input").value);
+    if (qte > 0) produits.push({ id, quantite: qte });
   });
 
-  if (produits.length === 0) return alert("Aucun produit sélectionné.");
+  if (produits.length === 0) return alert("Sélectionnez au moins un produit");
 
   const total = parseFloat(totalElement.textContent);
 
   fetch("https://test-stock-warner-backend.onrender.com/vente", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ utilisateur_id, produits, total }),
+    body: JSON.stringify({ utilisateur_id: parseInt(employe_id), produits, total }),
   })
     .then((res) => res.json())
-    .then((data) => {
+    .then(() => {
       alert("Vente enregistrée !");
       produitsContainer.innerHTML = "";
-      totalElement.textContent = "0";
-      ajouterProduit(); // recommence avec une ligne vide
-    })
-    .catch((err) => {
-      alert("Erreur lors de la vente !");
-      console.error(err);
+      chargerProduits();
     });
 });
