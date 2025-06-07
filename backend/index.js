@@ -1,8 +1,14 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 import { createClient } from "@supabase/supabase-js";
 
-// Connexion à Supabase
+// Chemins nécessaires pour __dirname en ESM
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+// Connexion Supabase
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_KEY
@@ -12,32 +18,26 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Route test
+// Sert les fichiers statiques du frontend
+app.use(express.static(path.join(__dirname, "../frontend")));
+
+// Route GET /
 app.get("/", (req, res) => {
-  res.send("Backend test-stock-warner actif !");
+  res.sendFile(path.join(__dirname, "../frontend/caisse.html"));
 });
 
-// Route GET /produits : récupère tous les produits
+// GET /produits
 app.get("/produits", async (req, res) => {
   const { data, error } = await supabase.from("produits").select("*");
-  if (error) {
-    return res.status(500).json({ error: error.message });
-  }
+  if (error) return res.status(500).json({ error: error.message });
   res.json(data);
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => {
-  console.log(`Serveur lancé sur le port ${PORT}`);
-});
-
-// Route POST /login : connexion employé
+// POST /login
 app.post("/login", async (req, res) => {
   const { pseudo, mot_de_passe } = req.body;
-
-  if (!pseudo || !mot_de_passe) {
+  if (!pseudo || !mot_de_passe)
     return res.status(400).json({ error: "Pseudo et mot de passe requis" });
-  }
 
   const { data, error } = await supabase
     .from("utilisateurs")
@@ -45,66 +45,47 @@ app.post("/login", async (req, res) => {
     .eq("pseudo", pseudo)
     .single();
 
-  if (error || !data) {
-    return res.status(401).json({ error: "Utilisateur introuvable" });
-  }
-
-  if (data.mot_de_passe !== mot_de_passe) {
+  if (error || !data) return res.status(401).json({ error: "Utilisateur introuvable" });
+  if (data.mot_de_passe !== mot_de_passe)
     return res.status(401).json({ error: "Mot de passe incorrect" });
-  }
-
-  if (!data.actif) {
-    return res.status(403).json({ error: "Utilisateur désactivé" });
-  }
+  if (!data.actif) return res.status(403).json({ error: "Utilisateur désactivé" });
 
   res.json({
     message: "Connexion réussie",
     id: data.id,
     pseudo: data.pseudo,
     role: data.role,
-    actif: data.actif
+    actif: data.actif,
   });
 });
 
-// Route POST /vente : enregistre la vente et déduit le stock
+// POST /vente
 app.post("/vente", async (req, res) => {
   const { utilisateur_id, produits, total } = req.body;
-
-  // Vérification des champs requis
-  if (!utilisateur_id || !produits || typeof total !== "number") {
+  if (!utilisateur_id || !produits || typeof total !== "number")
     return res.status(400).json({ error: "Champs requis manquants." });
-  }
 
-  // Enregistrement de la vente
   const { data: vente, error: erreurVente } = await supabase
     .from("ventes")
     .insert([{ utilisateur_id, produits, total }])
     .select()
     .single();
 
-  if (erreurVente) {
-    console.error(erreurVente);
-    return res.status(500).json({ error: erreurVente.message || "Erreur enregistrement de la vente." });
-  }
+  if (erreurVente) return res.status(500).json({ error: erreurVente.message });
 
-  // Déduction des stocks
-  for (const produit of produits) {
-    const { id, quantite } = produit;
-
+  for (const { id, quantite } of produits) {
     const { error: erreurStock } = await supabase.rpc("deduire_stock", {
       produit_id_input: id,
       quantite_input: quantite,
     });
 
-    if (erreurStock) {
-      console.error(erreurStock);
-      return res.status(500).json({ error: `Erreur sur produit ${id}` });
-    }
+    if (erreurStock) return res.status(500).json({ error: `Erreur sur produit ${id}` });
   }
 
-  // Réponse finale
-  res.json({
-    message: "Vente enregistrée avec succès",
-    vente,
-  });
+  res.json({ message: "Vente enregistrée avec succès", vente });
+});
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => {
+  console.log(`✅ Serveur lancé sur http://localhost:${PORT}`);
 });
