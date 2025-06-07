@@ -26,7 +26,7 @@ btnLogin.addEventListener("click", async () => {
   const { data, error } = await supabase
     .from("utilisateurs")
     .select("*")
-    .eq("pseudo", pseudo)
+    .ilike("pseudo", pseudo)
     .single();
 
   if (error || !data) return alert("Utilisateur introuvable.");
