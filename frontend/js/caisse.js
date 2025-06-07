@@ -1,20 +1,21 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-// 🔁 À modifier avec tes vraies informations Supabase :
-const supabaseUrl = "https://jwydeurmndwzevsvpaql.supabase.co"; // ← Ton URL Supabase
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3eWRldXJtbmR3emV2c3ZwYXFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNjI4NDgsImV4cCI6MjA2NDgzODg0OH0.CWvgdZ-wYOLYtGzZQA4U8R7leNwTEa9bfyU8wnx9TC0";           // ← Ta clé API publique
+// 🔐 Configuration Supabase
+const supabaseUrl = "https://xxx.supabase.co"; // ← Remplace
+const supabaseKey = "eyJhbGciOi...";            // ← Remplace
 const supabase = createClient(supabaseUrl, supabaseKey);
 
-// Éléments DOM
+// 🔧 Références DOM
+const loginBtn = document.getElementById("login-btn");
 const produitsContainer = document.getElementById("liste-produits");
 const totalElement = document.getElementById("total");
 const validerBtn = document.getElementById("valider-vente");
 const ajouterBtn = document.getElementById("ajouter-produit");
 
-// === Connexion utilisateur ===
-window.login = async function () {
+// 🎯 Connexion employé
+loginBtn.addEventListener("click", async () => {
   const pseudo = document.getElementById("login-pseudo").value.trim();
-  const mot_de_passe = document.getElementById("login-mdp").value.trim();
+  const mdp = document.getElementById("login-mdp").value.trim();
 
   const { data, error } = await supabase
     .from("utilisateurs")
@@ -23,17 +24,16 @@ window.login = async function () {
     .single();
 
   if (error || !data) return alert("Utilisateur introuvable.");
-  if (data.mot_de_passe !== mot_de_passe) return alert("Mot de passe incorrect.");
+  if (data.mot_de_passe !== mdp) return alert("Mot de passe incorrect.");
 
-  // Connexion réussie
   localStorage.setItem("employe_id", data.id);
   document.getElementById("login-container").style.display = "none";
   document.getElementById("caisse-container").style.display = "block";
 
   chargerProduits();
-};
+});
 
-// === Chargement des produits ===
+// 🛒 Charger les produits
 function chargerProduits() {
   fetch("https://test-stock-warner-backend.onrender.com/produits")
     .then((res) => res.json())
@@ -41,11 +41,10 @@ function chargerProduits() {
       produitsContainer.innerHTML = "";
       ajouterLigneProduit(produits);
       ajouterBtn.onclick = () => ajouterLigneProduit(produits);
-    })
-    .catch((err) => alert("Erreur de chargement des produits"));
+    });
 }
 
-// === Ajout dynamique de produit ===
+// ➕ Ajouter une ligne de produit
 function ajouterLigneProduit(produits) {
   const div = document.createElement("div");
   div.className = "ligne-produit";
@@ -73,7 +72,7 @@ function ajouterLigneProduit(produits) {
   calculerTotal();
 }
 
-// === Calcul du total ===
+// 🧮 Calcul automatique du total
 function calculerTotal() {
   let total = 0;
   produitsContainer.querySelectorAll(".ligne-produit").forEach((ligne) => {
@@ -85,7 +84,7 @@ function calculerTotal() {
   totalElement.textContent = total.toFixed(2);
 }
 
-// === Validation et envoi de la vente ===
+// 💾 Enregistrer la vente
 validerBtn.addEventListener("click", () => {
   const employe_id = localStorage.getItem("employe_id");
   if (!employe_id) return alert("Non connecté");
@@ -111,6 +110,5 @@ validerBtn.addEventListener("click", () => {
       alert("Vente enregistrée !");
       produitsContainer.innerHTML = "";
       chargerProduits();
-    })
-    .catch(() => alert("Erreur lors de l'enregistrement de la vente."));
+    });
 });
