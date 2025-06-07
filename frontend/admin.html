@@ -2,17 +2,136 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8" />
-  <title>Admin - Compta Eira</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Admin Panel - Compta Eira</title>
   <link rel="stylesheet" href="css/caisse.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      background: url('https://i.imgur.com/Y7tRj2b.jpg') no-repeat center center fixed;
+      background-size: cover;
+      margin: 0;
+      padding: 0;
+    }
+    .container {
+      background: rgba(255, 255, 255, 0.95);
+      max-width: 900px;
+      margin: 50px auto;
+      border-radius: 15px;
+      padding: 30px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+    .admin-section {
+      margin-bottom: 30px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    th, td {
+      padding: 10px;
+      border-bottom: 1px solid #ddd;
+      text-align: left;
+    }
+    th {
+      background-color: #eee;
+    }
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background-color: #444;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    button:hover {
+      background-color: #222;
+    }
+  </style>
 </head>
 <body>
   <div class="container">
-    <h1>Panneau d'administration</h1>
-    <p>Bienvenue dans l’espace réservé aux admins.</p>
-    <!-- Ajoute ici les sections de gestion (utilisateurs, stats globales, etc.) -->
-    <button onclick="window.location.href='caisse.html'">Retour</button>
+    <h1>Panel Administrateur</h1>
+
+    <div id="admin-content">
+      <p>Chargement des données...</p>
+    </div>
+
+    <button onclick="retourAccueil()">Retour à la caisse</button>
   </div>
 
-  <script type="module" src="js/admin.js"></script>
+  <script type="module">
+    import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+    const supabase = createClient(
+      "https://jwydeurmndwzevsvpaql.supabase.co",
+      "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+    );
+
+    const employe_id = localStorage.getItem("employe_id");
+
+    if (!employe_id) {
+      alert("Non connecté.");
+      window.location.href = "/";
+    }
+
+    const adminContent = document.getElementById("admin-content");
+
+    async function checkRoleAndLoad() {
+      const { data, error } = await supabase
+        .from("utilisateurs")
+        .select("*")
+        .eq("id", employe_id)
+        .single();
+
+      if (error || !data) {
+        adminContent.innerHTML = "Erreur de récupération.";
+        return;
+      }
+
+      if (data.role !== "admin") {
+        adminContent.innerHTML = "Accès refusé.";
+        return;
+      }
+
+      const { data: ventes, error: errVentes } = await supabase
+        .from("ventes")
+        .select("*");
+
+      if (errVentes) {
+        adminContent.innerHTML = "Erreur de chargement des ventes.";
+        return;
+      }
+
+      let html = `<div class="admin-section">
+        <h2>Historique des ventes</h2>
+        <table><thead><tr><th>ID</th><th>Employé</th><th>Total</th><th>Date</th></tr></thead><tbody>`;
+
+      ventes.forEach((vente) => {
+        html += `<tr>
+          <td>${vente.id}</td>
+          <td>${vente.utilisateur_id}</td>
+          <td>${vente.total.toFixed(2)} $</td>
+          <td>${new Date(vente.date).toLocaleString()}</td>
+        </tr>`;
+      });
+
+      html += `</tbody></table></div>`;
+      adminContent.innerHTML = html;
+    }
+
+    function retourAccueil() {
+      window.location.href = "/";
+    }
+
+    checkRoleAndLoad();
+  </script>
 </body>
 </html>
