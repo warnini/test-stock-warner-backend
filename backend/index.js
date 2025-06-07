@@ -85,6 +85,44 @@ app.post("/vente", async (req, res) => {
   res.json({ message: "Vente enregistrée avec succès", vente });
 });
 
+// ✅ NOUVELLE ROUTE /stats/:id
+app.get("/stats/:id", async (req, res) => {
+  const utilisateurId = parseInt(req.params.id);
+
+  try {
+    // Total des ventes et nombre de ventes
+    const { data: ventes, error: errVentes } = await supabase
+      .from("ventes")
+      .select("total")
+      .eq("utilisateur_id", utilisateurId);
+
+    if (errVentes) throw errVentes;
+
+    const nb_ventes = ventes.length;
+    const total_ventes = ventes.reduce((acc, v) => acc + (v.total || 0), 0);
+
+    // Nombre total de produits vendus (en comptant les quantités)
+    let nb_produits = 0;
+    for (const vente of ventes) {
+      const produits = vente.produits || [];
+      nb_produits += produits.reduce((sum, p) => sum + (p.quantite || 0), 0);
+    }
+
+    // Nombre de craft (si table disponible)
+    const { data: crafts, error: errCrafts } = await supabase
+      .from("crafts")
+      .select("*")
+      .eq("utilisateur_id", utilisateurId);
+
+    const nb_crafts = crafts?.length || 0;
+
+    res.json({ nb_ventes, total_ventes, nb_produits, nb_crafts });
+  } catch (error) {
+    console.error("Erreur dans /stats/:id", error);
+    res.status(500).json({ error: "Erreur serveur." });
+  }
+});
+
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`✅ Serveur lancé sur http://localhost:${PORT}`);
