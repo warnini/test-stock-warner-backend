@@ -68,22 +68,25 @@ app.post("/login", async (req, res) => {
 
 // Route POST /vente : enregistre la vente et déduit le stock
 app.post("/vente", async (req, res) => {
-  const { utilisateur_id, produits, total } = req.body;
+  const { id_utilisateur, produits, total } = req.body;
 
-  if (!utilisateur_id || !produits || !total) {
+  // Validation renforcée
+  if (!id_utilisateur || !produits || typeof total !== "number") {
     return res.status(400).json({ error: "Champs requis manquants." });
   }
 
   // 1. Enregistrer la vente
   const { data: vente, error: erreurVente } = await supabase
     .from("ventes")
-    .insert([{ utilisateur_id, produits, total }])
+    .insert([{ id_utilisateur, produits, total }])
     .select()
     .single();
 
   if (erreurVente) {
-    console.error(erreurVente); // Affiche l'erreur dans les logs Render
-    return res.status(500).json({ error: erreurVente.message || "Erreur enregistrement de la vente." });
+    console.error(erreurVente); // utile dans les logs Render
+    return res.status(500).json({
+      error: erreurVente.message || "Erreur enregistrement de la vente.",
+    });
   }
 
   // 2. Déduire les stocks un par un
@@ -96,10 +99,13 @@ app.post("/vente", async (req, res) => {
     });
 
     if (erreurStock) {
-      return res.status(500).json({ error: `Erreur sur produit ${id}` });
+      return res
+        .status(500)
+        .json({ error: `Erreur sur produit ${id}` });
     }
   }
 
+  // 3. Retour succès
   res.json({
     message: "Vente enregistrée avec succès",
     vente,
