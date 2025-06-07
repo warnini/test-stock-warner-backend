@@ -61,7 +61,17 @@
   </style>
 </head>
 <body>
-  <div class="container">
+
+  <!-- Page de connexion -->
+  <div id="login-container" class="container">
+    <h1>Connexion Employé</h1>
+    <input type="text" id="login-pseudo" placeholder="Pseudo">
+    <input type="password" id="login-mdp" placeholder="Mot de passe">
+    <button onclick="login()">Se connecter</button>
+  </div>
+
+  <!-- Interface de caisse (masquée par défaut) -->
+  <div id="caisse-container" class="container" style="display: none;">
     <h1>Interface de Caisse</h1>
     <div id="liste-produits"></div>
     <button id="ajouter-produit">+ Ajouter un produit</button>
@@ -72,22 +82,3 @@
   <script src="js/caisse.js"></script>
 </body>
 </html>
-
-<!-- Page de connexion -->
-<div id="login-container" class="container">
-  <h1>Connexion Employé</h1>
-  <input type="text" id="login-pseudo" placeholder="Pseudo">
-  <input type="password" id="login-mdp" placeholder="Mot de passe">
-  <button onclick="login()">Se connecter</button>
-</div>
-
-<!-- Interface de caisse (masquée par défaut) -->
-<div id="caisse-container" class="container" style="display: none;">
-  <h1>Interface de Caisse</h1>
-  <div id="liste-produits"></div>
-  <button id="ajouter-produit">+ Ajouter un produit</button>
-  <div class="total">Total: <span id="total">0</span> $</div>
-  <button id="valider-vente">Valider la vente</button>
-</div>
-
-<script src="js/caisse.js"></script>
