@@ -68,28 +68,28 @@ app.post("/login", async (req, res) => {
 
 // Route POST /vente : enregistre la vente et déduit le stock
 app.post("/vente", async (req, res) => {
-  const { id_utilisateur, produits, total } = req.body;
+  const { utilisateur_id, produits, total } = req.body;
 
-  // Validation renforcée
-  if (!id_utilisateur || !produits || typeof total !== "number") {
+  // Vérification des champs requis
+  if (!utilisateur_id || !produits || typeof total !== "number") {
     return res.status(400).json({ error: "Champs requis manquants." });
   }
 
-  // 1. Enregistrer la vente
+  // 1. Enregistrer la vente dans Supabase
   const { data: vente, error: erreurVente } = await supabase
     .from("ventes")
-    .insert([{ id_utilisateur, produits, total }])
+    .insert([{ utilisateur_id, produits, total }])
     .select()
     .single();
 
   if (erreurVente) {
-    console.error(erreurVente); // utile dans les logs Render
+    console.error(erreurVente);
     return res.status(500).json({
       error: erreurVente.message || "Erreur enregistrement de la vente.",
     });
   }
 
-  // 2. Déduire les stocks un par un
+  // 2. Déduire les stocks pour chaque produit
   for (const produit of produits) {
     const { id, quantite } = produit;
 
@@ -99,13 +99,14 @@ app.post("/vente", async (req, res) => {
     });
 
     if (erreurStock) {
-      return res
-        .status(500)
-        .json({ error: `Erreur sur produit ${id}` });
+      console.error(erreurStock);
+      return res.status(500).json({
+        error: `Erreur sur produit ${id}`,
+      });
     }
   }
 
-  // 3. Retour succès
+  // 3. Réponse finale
   res.json({
     message: "Vente enregistrée avec succès",
     vente,
