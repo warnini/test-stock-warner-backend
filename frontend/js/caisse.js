@@ -3,7 +3,7 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 // 🔐 Supabase
 const supabase = createClient(
   "https://jwydeurmndwzevsvpaql.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3eWRldXJtbmR3emV2c3ZwYXFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNjI4NDgsImV4cCI6MjA2NDgzODg0OH0.CWvgdZ-wYOLYtGzZQA4U8R7leNwTEa9bfyU8wnx9TC0" // remplace par ta vraie clé publique
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3eWRldXJtbmR3emV2c3ZwYXFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNjI4NDgsImV4cCI6MjA2NDgzODg0OH0.CWvgdZ-wYOLYtGzZQA4U8R7leNwTEa9bfyU8wnx9TC0"
 );
 
 // 🎯 Sélecteurs
@@ -23,13 +23,11 @@ btnLogin.addEventListener("click", async () => {
 
   if (!pseudo || !mot_de_passe) return alert("Veuillez remplir les deux champs.");
 
-const { data, error } = await supabase
-  .from("utilisateurs")
-  .select("*")
-  .ilike("pseudo", pseudo);
-
-console.log("Résultat brut :", data, error);
-
+  const { data, error } = await supabase
+    .from("utilisateurs")
+    .select("*")
+    .eq("pseudo", pseudo)
+    .maybeSingle(); // Renvoie null si pas trouvé
 
   if (error || !data) return alert("Utilisateur introuvable.");
   if (data.mot_de_passe !== mot_de_passe) return alert("Mot de passe incorrect.");
@@ -159,7 +157,7 @@ btnRetour.addEventListener("click", () => {
   document.getElementById("caisse-container").style.display = "block";
 });
 
-// 🔐 Accès admin (redirige vers admin.html)
+// 🔐 Accès admin
 btnAdmin.addEventListener("click", () => {
   window.location.href = "admin.html";
 });
