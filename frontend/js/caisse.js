@@ -3,7 +3,7 @@ import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js
 // 🔐 Supabase
 const supabase = createClient(
   "https://jwydeurmndwzevsvpaql.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..." // remplace par ta vraie clé publique
 );
 
 // 🎯 Sélecteurs
@@ -16,10 +16,12 @@ const btnDashboard = document.getElementById("ouvrir-dashboard");
 const btnRetour = document.getElementById("retour-caisse");
 const btnAdmin = document.getElementById("ouvrir-admin");
 
-// 👉 Connexion
+// 🧑 Connexion utilisateur
 btnLogin.addEventListener("click", async () => {
   const pseudo = document.getElementById("login-pseudo").value.trim();
   const mot_de_passe = document.getElementById("login-mdp").value.trim();
+
+  if (!pseudo || !mot_de_passe) return alert("Veuillez remplir les deux champs.");
 
   const { data, error } = await supabase
     .from("utilisateurs")
@@ -43,7 +45,7 @@ btnLogin.addEventListener("click", async () => {
   chargerProduits();
 });
 
-// 🛒 Charger produits
+// 🛒 Chargement des produits
 function chargerProduits() {
   fetch("https://test-stock-warner-backend.onrender.com/produits")
     .then((res) => res.json())
@@ -54,6 +56,7 @@ function chargerProduits() {
     });
 }
 
+// ➕ Ajouter une ligne produit
 function ajouterLigneProduit(produits) {
   const div = document.createElement("div");
   div.className = "ligne-produit";
@@ -81,7 +84,7 @@ function ajouterLigneProduit(produits) {
   calculerTotal();
 }
 
-// 💰 Calcul total
+// 💰 Calcul du total
 function calculerTotal() {
   let total = 0;
   produitsContainer.querySelectorAll(".ligne-produit").forEach((ligne) => {
@@ -93,7 +96,7 @@ function calculerTotal() {
   totalElement.textContent = total.toFixed(2);
 }
 
-// ✅ Enregistrer vente
+// ✅ Enregistrement de la vente
 validerBtn.addEventListener("click", () => {
   const employe_id = localStorage.getItem("employe_id");
   if (!employe_id) return alert("Non connecté");
@@ -122,7 +125,7 @@ validerBtn.addEventListener("click", () => {
     });
 });
 
-// 📊 Ouvrir dashboard
+// 📊 Statistiques personnelles
 btnDashboard.addEventListener("click", async () => {
   document.getElementById("caisse-container").style.display = "none";
   document.getElementById("dashboard-container").style.display = "block";
@@ -143,18 +146,18 @@ btnDashboard.addEventListener("click", async () => {
       <p><strong>Produits vendus :</strong> ${stats.nb_produits}</p>
       <p><strong>Nombre de craft :</strong> ${stats.nb_crafts}</p>
     `;
-  } catch (e) {
+  } catch {
     container.innerHTML = "Erreur de chargement.";
   }
 });
 
-// 🔙 Retour caisse
+// 🔙 Retour à la caisse
 btnRetour.addEventListener("click", () => {
   document.getElementById("dashboard-container").style.display = "none";
   document.getElementById("caisse-container").style.display = "block";
 });
 
-// 🔐 Accès admin
+// 🔐 Accès admin (redirige vers admin.html)
 btnAdmin.addEventListener("click", () => {
   window.location.href = "admin.html";
 });
