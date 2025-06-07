@@ -1,9 +1,10 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
 // 🔐 Supabase
-const supabaseUrl = "https://jwydeurmndwzevsvpaql.supabase.co"; // Remplace par ton URL
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3eWRldXJtbmR3emV2c3ZwYXFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNjI4NDgsImV4cCI6MjA2NDgzODg0OH0.CWvgdZ-wYOLYtGzZQA4U8R7leNwTEa9bfyU8wnx9TC0"; // Remplace par ta clé publique
-const supabase = createClient(supabaseUrl, supabaseKey);
+const supabase = createClient(
+  "https://jwydeurmndwzevsvpaql.supabase.co",
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+);
 
 // 🎯 Sélecteurs
 const produitsContainer = document.getElementById("liste-produits");
@@ -13,6 +14,7 @@ const ajouterBtn = document.getElementById("ajouter-produit");
 const btnLogin = document.getElementById("btn-login");
 const btnDashboard = document.getElementById("ouvrir-dashboard");
 const btnRetour = document.getElementById("retour-caisse");
+const btnAdmin = document.getElementById("ouvrir-admin");
 
 // 👉 Connexion
 btnLogin.addEventListener("click", async () => {
@@ -29,9 +31,14 @@ btnLogin.addEventListener("click", async () => {
   if (data.mot_de_passe !== mot_de_passe) return alert("Mot de passe incorrect.");
 
   localStorage.setItem("employe_id", data.id);
+  localStorage.setItem("employe_role", data.role);
 
   document.getElementById("login-container").style.display = "none";
   document.getElementById("caisse-container").style.display = "block";
+
+  if (data.role === "admin") {
+    btnAdmin.style.display = "inline-block";
+  }
 
   chargerProduits();
 });
@@ -145,4 +152,9 @@ btnDashboard.addEventListener("click", async () => {
 btnRetour.addEventListener("click", () => {
   document.getElementById("dashboard-container").style.display = "none";
   document.getElementById("caisse-container").style.display = "block";
+});
+
+// 🔐 Accès admin
+btnAdmin.addEventListener("click", () => {
+  window.location.href = "admin.html";
 });
