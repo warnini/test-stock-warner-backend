@@ -10,7 +10,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
 
   <!-- Supabase -->
-  <script type="module" src="js/caisse.js" defer></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 
   <style>
     body {
@@ -73,7 +73,7 @@
     <h1>Connexion Employé</h1>
     <input type="text" id="login-pseudo" placeholder="Pseudo">
     <input type="password" id="login-mdp" placeholder="Mot de passe">
-    <button id="login-btn">Se connecter</button>
+    <button id="btn-login">Se connecter</button>
   </div>
 
   <!-- Interface de caisse -->
@@ -82,21 +82,22 @@
     <div id="liste-produits"></div>
     <button id="ajouter-produit">+ Ajouter un produit</button>
     <div class="total">Total: <span id="total">0</span> $</div>
-    
-    <button id="ouvrir-dashboard">Voir mes statistiques</button>
     <button id="valider-vente">Valider la vente</button>
+    <br><br>
+    <button id="ouvrir-dashboard">Voir mes statistiques</button>
   </div>
 
-  <!-- Dashboard employé -->
-<div id="dashboard-container" class="container" style="display: none;">
-  <h1>Dashboard Personnel</h1>
-  <div id="dashboard-stats">
-    <p><strong>Total ventes :</strong> <span id="stat-ventes">0</span></p>
-    <p><strong>Total produits vendus :</strong> <span id="stat-produits">0</span></p>
-    <p><strong>Total crafts :</strong> <span id="stat-crafts">0</span></p>
+  <!-- Interface Dashboard (statistiques personnelles) -->
+  <div id="dashboard-container" class="container" style="display: none;">
+    <h1>Mes Statistiques</h1>
+    <div id="contenu-dashboard">
+      <p>Chargement des données...</p>
+    </div>
+    <br>
+    <button id="retour-caisse">Retour à la caisse</button>
   </div>
-  <button id="retour-caisse">← Retour à la caisse</button>
-</div>
 
+  <!-- Script JS principal -->
+  <script type="module" src="js/caisse.js"></script>
 </body>
 </html>
