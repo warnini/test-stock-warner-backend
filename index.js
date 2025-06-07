@@ -66,32 +66,26 @@ app.post("/login", async (req, res) => {
   });
 });
 
-// Route POST /vente : enregistrement d'une vente
+// Route POST /vente : enregistre la vente et déduit le stock
 app.post("/vente", async (req, res) => {
   const { id_utilisateur, produits, total } = req.body;
 
   if (!id_utilisateur || !produits || !total) {
-    return res.status(400).json({ error: "Champs manquants" });
+    return res.status(400).json({ error: "Champs requis manquants." });
   }
 
-  // 1. Enregistrement dans la table 'ventes'
+  // 1. Enregistrer la vente
   const { data: vente, error: erreurVente } = await supabase
     .from("ventes")
-    .insert([
-      {
-        id_utilisateur,
-        total,
-        produits,
-      },
-    ])
+    .insert([{ id_utilisateur, produits, total }])
     .select()
     .single();
 
   if (erreurVente) {
-    return res.status(500).json({ error: "Erreur enregistrement vente" });
+    return res.status(500).json({ error: "Erreur enregistrement de la vente." });
   }
 
-  // 2. Mise à jour des stocks
+  // 2. Déduire les stocks un par un
   for (const produit of produits) {
     const { id, quantite } = produit;
 
@@ -101,12 +95,12 @@ app.post("/vente", async (req, res) => {
     });
 
     if (erreurStock) {
-      return res.status(500).json({ error: `Erreur mise à jour stock produit ${id}` });
+      return res.status(500).json({ error: `Erreur sur produit ${id}` });
     }
   }
 
   res.json({
-    message: "Vente enregistrée et stock mis à jour",
+    message: "Vente enregistrée avec succès",
     vente,
   });
 });
