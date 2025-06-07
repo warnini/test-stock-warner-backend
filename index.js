@@ -68,24 +68,23 @@ app.post("/login", async (req, res) => {
 
 // Route POST /vente : enregistre la vente et déduit le stock
 app.post("/vente", async (req, res) => {
-  const { id_utilisateur, produits, total } = req.body;
+  const { utilisateur_id, produits, total } = req.body;
 
-  if (!id_utilisateur || !produits || !total) {
+  if (!utilisateur_id || !produits || !total) {
     return res.status(400).json({ error: "Champs requis manquants." });
   }
 
   // 1. Enregistrer la vente
   const { data: vente, error: erreurVente } = await supabase
     .from("ventes")
-    .insert([{ id_utilisateur, produits, total }])
+    .insert([{ utilisateur_id, produits, total }])
     .select()
     .single();
 
   if (erreurVente) {
-  console.error(erreurVente); // Affiche l'erreur dans les logs Render
-  return res.status(500).json({ error: erreurVente.message || "Erreur enregistrement de la vente." });
-}
-
+    console.error(erreurVente); // Affiche l'erreur dans les logs Render
+    return res.status(500).json({ error: erreurVente.message || "Erreur enregistrement de la vente." });
+  }
 
   // 2. Déduire les stocks un par un
   for (const produit of produits) {
