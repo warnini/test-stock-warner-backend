@@ -1,15 +1,17 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-const supabaseUrl = "https://xxx.supabase.co"; // Remplace par ton URL Supabase
-const supabaseKey = "eyJhbGciOi..."; // Remplace par ta vraie clé publique
+// 🔁 À modifier avec tes vraies informations Supabase :
+const supabaseUrl = "https://xxx.supabase.co"; // ← Ton URL Supabase
+const supabaseKey = "eyJhbGciOi...";           // ← Ta clé API publique
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// Éléments DOM
 const produitsContainer = document.getElementById("liste-produits");
 const totalElement = document.getElementById("total");
 const validerBtn = document.getElementById("valider-vente");
 const ajouterBtn = document.getElementById("ajouter-produit");
 
-// Fonction de connexion
+// === Connexion utilisateur ===
 window.login = async function () {
   const pseudo = document.getElementById("login-pseudo").value.trim();
   const mot_de_passe = document.getElementById("login-mdp").value.trim();
@@ -31,7 +33,7 @@ window.login = async function () {
   chargerProduits();
 };
 
-// Charger les produits depuis le backend
+// === Chargement des produits ===
 function chargerProduits() {
   fetch("https://test-stock-warner-backend.onrender.com/produits")
     .then((res) => res.json())
@@ -39,10 +41,11 @@ function chargerProduits() {
       produitsContainer.innerHTML = "";
       ajouterLigneProduit(produits);
       ajouterBtn.onclick = () => ajouterLigneProduit(produits);
-    });
+    })
+    .catch((err) => alert("Erreur de chargement des produits"));
 }
 
-// Ajouter une ligne produit
+// === Ajout dynamique de produit ===
 function ajouterLigneProduit(produits) {
   const div = document.createElement("div");
   div.className = "ligne-produit";
@@ -70,7 +73,7 @@ function ajouterLigneProduit(produits) {
   calculerTotal();
 }
 
-// Calcul automatique du total
+// === Calcul du total ===
 function calculerTotal() {
   let total = 0;
   produitsContainer.querySelectorAll(".ligne-produit").forEach((ligne) => {
@@ -82,7 +85,7 @@ function calculerTotal() {
   totalElement.textContent = total.toFixed(2);
 }
 
-// Enregistrement de la vente
+// === Validation et envoi de la vente ===
 validerBtn.addEventListener("click", () => {
   const employe_id = localStorage.getItem("employe_id");
   if (!employe_id) return alert("Non connecté");
@@ -108,5 +111,6 @@ validerBtn.addEventListener("click", () => {
       alert("Vente enregistrée !");
       produitsContainer.innerHTML = "";
       chargerProduits();
-    });
+    })
+    .catch(() => alert("Erreur lors de l'enregistrement de la vente."));
 });
