@@ -1,7 +1,7 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-const supabaseUrl = "https://xxx.supabase.co"; // ← Remplace par ton URL Supabase
-const supabaseKey = "eyJhbGciOi..."; // ← Remplace par ta clé publique
+const supabaseUrl = "https://jwydeurmndwzevsvpaql.supabase.co"; // ← Remplace par ton URL Supabase
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3eWRldXJtbmR3emV2c3ZwYXFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNjI4NDgsImV4cCI6MjA2NDgzODg0OH0.CWvgdZ-wYOLYtGzZQA4U8R7leNwTEa9bfyU8wnx9TC0"; // ← Remplace par ta clé publique
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 const produitsContainer = document.getElementById("liste-produits");
