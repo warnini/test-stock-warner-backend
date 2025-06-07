@@ -1,8 +1,8 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
 // 🔁 À modifier avec tes vraies informations Supabase :
-const supabaseUrl = "https://xxx.supabase.co"; // ← Ton URL Supabase
-const supabaseKey = "eyJhbGciOi...";           // ← Ta clé API publique
+const supabaseUrl = "https://jwydeurmndwzevsvpaql.supabase.co"; // ← Ton URL Supabase
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3eWRldXJtbmR3emV2c3ZwYXFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNjI4NDgsImV4cCI6MjA2NDgzODg0OH0.CWvgdZ-wYOLYtGzZQA4U8R7leNwTEa9bfyU8wnx9TC0";           // ← Ta clé API publique
 const supabase = createClient(supabaseUrl, supabaseKey);
 
 // Éléments DOM
