@@ -23,11 +23,13 @@ btnLogin.addEventListener("click", async () => {
 
   if (!pseudo || !mot_de_passe) return alert("Veuillez remplir les deux champs.");
 
-  const { data, error } = await supabase
-    .from("utilisateurs")
-    .select("*")
-    .ilike("pseudo", pseudo)
-    .single();
+const { data, error } = await supabase
+  .from("utilisateurs")
+  .select("*")
+  .ilike("pseudo", pseudo);
+
+console.log("Résultat brut :", data, error);
+
 
   if (error || !data) return alert("Utilisateur introuvable.");
   if (data.mot_de_passe !== mot_de_passe) return alert("Mot de passe incorrect.");
