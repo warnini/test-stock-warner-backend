@@ -85,15 +85,14 @@ app.post("/vente", async (req, res) => {
   res.json({ message: "Vente enregistrée avec succès", vente });
 });
 
-// ✅ NOUVELLE ROUTE /stats/:id
+// ✅ GET /stats/:id
 app.get("/stats/:id", async (req, res) => {
   const utilisateurId = parseInt(req.params.id);
 
   try {
-    // Total des ventes et nombre de ventes
     const { data: ventes, error: errVentes } = await supabase
       .from("ventes")
-      .select("total")
+      .select("total, produits")
       .eq("utilisateur_id", utilisateurId);
 
     if (errVentes) throw errVentes;
@@ -101,14 +100,12 @@ app.get("/stats/:id", async (req, res) => {
     const nb_ventes = ventes.length;
     const total_ventes = ventes.reduce((acc, v) => acc + (v.total || 0), 0);
 
-    // Nombre total de produits vendus (en comptant les quantités)
     let nb_produits = 0;
     for (const vente of ventes) {
       const produits = vente.produits || [];
       nb_produits += produits.reduce((sum, p) => sum + (p.quantite || 0), 0);
     }
 
-    // Nombre de craft (si table disponible)
     const { data: crafts, error: errCrafts } = await supabase
       .from("crafts")
       .select("*")
@@ -121,6 +118,110 @@ app.get("/stats/:id", async (req, res) => {
     console.error("Erreur dans /stats/:id", error);
     res.status(500).json({ error: "Erreur serveur." });
   }
+});
+
+// =======================
+// 🔧 ROUTES ADMIN - PRODUITS
+// =======================
+
+app.get("/admin/produits", async (req, res) => {
+  const { data, error } = await supabase.from("produits").select("*");
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.post("/admin/produits", async (req, res) => {
+  const { nom, prix_vente, stock } = req.body;
+  if (!nom || prix_vente == null || stock == null)
+    return res.status(400).json({ error: "Champs requis manquants" });
+
+  const { data, error } = await supabase
+    .from("produits")
+    .insert([{ nom, prix_vente, stock }])
+    .select()
+    .single();
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.put("/admin/produits/:id", async (req, res) => {
+  const id = parseInt(req.params.id);
+  const { nom, prix_vente, stock } = req.body;
+
+  const { data, error } = await supabase
+    .from("produits")
+    .update({ nom, prix_vente, stock })
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.delete("/admin/produits/:id", async (req, res) => {
+  const id = parseInt(req.params.id);
+
+  const { error } = await supabase
+    .from("produits")
+    .delete()
+    .eq("id", id);
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ message: "Produit supprimé" });
+});
+
+// =======================
+// 🔧 ROUTES ADMIN - UTILISATEURS
+// =======================
+
+app.get("/admin/utilisateurs", async (req, res) => {
+  const { data, error } = await supabase.from("utilisateurs").select("*");
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.post("/admin/utilisateurs", async (req, res) => {
+  const { pseudo, mot_de_passe, role, actif } = req.body;
+  if (!pseudo || !mot_de_passe || !role)
+    return res.status(400).json({ error: "Champs requis manquants" });
+
+  const { data, error } = await supabase
+    .from("utilisateurs")
+    .insert([{ pseudo, mot_de_passe, role, actif: actif ?? true }])
+    .select()
+    .single();
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.put("/admin/utilisateurs/:id", async (req, res) => {
+  const id = parseInt(req.params.id);
+  const { pseudo, mot_de_passe, role, actif } = req.body;
+
+  const { data, error } = await supabase
+    .from("utilisateurs")
+    .update({ pseudo, mot_de_passe, role, actif })
+    .eq("id", id)
+    .select()
+    .single();
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.json(data);
+});
+
+app.delete("/admin/utilisateurs/:id", async (req, res) => {
+  const id = parseInt(req.params.id);
+
+  const { error } = await supabase
+    .from("utilisateurs")
+    .delete()
+    .eq("id", id);
+
+  if (error) return res.status(500).json({ error: error.message });
+  res.json({ message: "Utilisateur supprimé" });
 });
 
 const PORT = process.env.PORT || 3000;
