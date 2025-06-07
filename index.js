@@ -82,8 +82,10 @@ app.post("/vente", async (req, res) => {
     .single();
 
   if (erreurVente) {
-    return res.status(500).json({ error: "Erreur enregistrement de la vente." });
-  }
+  console.error(erreurVente); // Affiche l'erreur dans les logs Render
+  return res.status(500).json({ error: erreurVente.message || "Erreur enregistrement de la vente." });
+}
+
 
   // 2. Déduire les stocks un par un
   for (const produit of produits) {
