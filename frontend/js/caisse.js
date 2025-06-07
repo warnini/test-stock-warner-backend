@@ -1,16 +1,18 @@
-const supabaseUrl = "https://<TON_URL_SUPABASE>"; // ← Remplace
-const supabaseKey = "<TA_CLÉ_SUPABASE>"; // ← Remplace
-const supabase = supabase.createClient(supabaseUrl, supabaseKey);
+import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+
+const supabaseUrl = "https://xxx.supabase.co"; // Remplace par ton URL Supabase
+const supabaseKey = "eyJhbGciOi..."; // Remplace par ta vraie clé publique
+const supabase = createClient(supabaseUrl, supabaseKey);
 
 const produitsContainer = document.getElementById("liste-produits");
 const totalElement = document.getElementById("total");
 const validerBtn = document.getElementById("valider-vente");
 const ajouterBtn = document.getElementById("ajouter-produit");
 
-// Connexion utilisateur
+// Fonction de connexion
 window.login = async function () {
-  const pseudo = document.getElementById("login-pseudo").value;
-  const mot_de_passe = document.getElementById("login-mdp").value;
+  const pseudo = document.getElementById("login-pseudo").value.trim();
+  const mot_de_passe = document.getElementById("login-mdp").value.trim();
 
   const { data, error } = await supabase
     .from("utilisateurs")
@@ -21,7 +23,7 @@ window.login = async function () {
   if (error || !data) return alert("Utilisateur introuvable.");
   if (data.mot_de_passe !== mot_de_passe) return alert("Mot de passe incorrect.");
 
-  // Stocker ID employé
+  // Connexion réussie
   localStorage.setItem("employe_id", data.id);
   document.getElementById("login-container").style.display = "none";
   document.getElementById("caisse-container").style.display = "block";
@@ -29,20 +31,18 @@ window.login = async function () {
   chargerProduits();
 };
 
-// Charger produits depuis backend
+// Charger les produits depuis le backend
 function chargerProduits() {
   fetch("https://test-stock-warner-backend.onrender.com/produits")
     .then((res) => res.json())
     .then((produits) => {
       produitsContainer.innerHTML = "";
       ajouterLigneProduit(produits);
-
-      ajouterBtn.addEventListener("click", () => {
-        ajouterLigneProduit(produits);
-      });
+      ajouterBtn.onclick = () => ajouterLigneProduit(produits);
     });
 }
 
+// Ajouter une ligne produit
 function ajouterLigneProduit(produits) {
   const div = document.createElement("div");
   div.className = "ligne-produit";
@@ -63,12 +63,14 @@ function ajouterLigneProduit(produits) {
 
   select.addEventListener("change", calculerTotal);
   input.addEventListener("input", calculerTotal);
+
   div.appendChild(select);
   div.appendChild(input);
   produitsContainer.appendChild(div);
   calculerTotal();
 }
 
+// Calcul automatique du total
 function calculerTotal() {
   let total = 0;
   produitsContainer.querySelectorAll(".ligne-produit").forEach((ligne) => {
@@ -80,6 +82,7 @@ function calculerTotal() {
   totalElement.textContent = total.toFixed(2);
 }
 
+// Enregistrement de la vente
 validerBtn.addEventListener("click", () => {
   const employe_id = localStorage.getItem("employe_id");
   if (!employe_id) return alert("Non connecté");
