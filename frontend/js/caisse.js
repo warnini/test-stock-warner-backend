@@ -1,16 +1,21 @@
 import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
 
-const supabaseUrl = "https://jwydeurmndwzevsvpaql.supabase.co"; // ← Remplace par ton URL Supabase
-const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3eWRldXJtbmR3emV2c3ZwYXFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNjI4NDgsImV4cCI6MjA2NDgzODg0OH0.CWvgdZ-wYOLYtGzZQA4U8R7leNwTEa9bfyU8wnx9TC0"; // ← Remplace par ta clé publique
+// 🔐 Supabase
+const supabaseUrl = "https://jwydeurmndwzevsvpaql.supabase.co"; // Remplace par ton URL
+const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3eWRldXJtbmR3emV2c3ZwYXFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNjI4NDgsImV4cCI6MjA2NDgzODg0OH0.CWvgdZ-wYOLYtGzZQA4U8R7leNwTEa9bfyU8wnx9TC0"; // Remplace par ta clé publique
 const supabase = createClient(supabaseUrl, supabaseKey);
 
+// 🎯 Sélecteurs
 const produitsContainer = document.getElementById("liste-produits");
 const totalElement = document.getElementById("total");
 const validerBtn = document.getElementById("valider-vente");
 const ajouterBtn = document.getElementById("ajouter-produit");
+const btnLogin = document.getElementById("btn-login");
+const btnDashboard = document.getElementById("ouvrir-dashboard");
+const btnRetour = document.getElementById("retour-caisse");
 
-// Connexion
-window.login = async function () {
+// 👉 Connexion
+btnLogin.addEventListener("click", async () => {
   const pseudo = document.getElementById("login-pseudo").value.trim();
   const mot_de_passe = document.getElementById("login-mdp").value.trim();
 
@@ -24,13 +29,14 @@ window.login = async function () {
   if (data.mot_de_passe !== mot_de_passe) return alert("Mot de passe incorrect.");
 
   localStorage.setItem("employe_id", data.id);
+
   document.getElementById("login-container").style.display = "none";
   document.getElementById("caisse-container").style.display = "block";
 
   chargerProduits();
-};
+});
 
-// Charger les produits
+// 🛒 Charger produits
 function chargerProduits() {
   fetch("https://test-stock-warner-backend.onrender.com/produits")
     .then((res) => res.json())
@@ -41,7 +47,6 @@ function chargerProduits() {
     });
 }
 
-// Ajouter une ligne produit
 function ajouterLigneProduit(produits) {
   const div = document.createElement("div");
   div.className = "ligne-produit";
@@ -69,7 +74,7 @@ function ajouterLigneProduit(produits) {
   calculerTotal();
 }
 
-// Calcul du total
+// 💰 Calcul total
 function calculerTotal() {
   let total = 0;
   produitsContainer.querySelectorAll(".ligne-produit").forEach((ligne) => {
@@ -81,7 +86,7 @@ function calculerTotal() {
   totalElement.textContent = total.toFixed(2);
 }
 
-// Enregistrer la vente
+// ✅ Enregistrer vente
 validerBtn.addEventListener("click", () => {
   const employe_id = localStorage.getItem("employe_id");
   if (!employe_id) return alert("Non connecté");
@@ -110,12 +115,7 @@ validerBtn.addEventListener("click", () => {
     });
 });
 
-
-// ----------- DASHBOARD -----------
-
-const btnDashboard = document.getElementById("ouvrir-dashboard");
-const btnRetour = document.getElementById("retour-caisse");
-
+// 📊 Ouvrir dashboard
 btnDashboard.addEventListener("click", async () => {
   document.getElementById("caisse-container").style.display = "none";
   document.getElementById("dashboard-container").style.display = "block";
@@ -123,25 +123,25 @@ btnDashboard.addEventListener("click", async () => {
   const employe_id = localStorage.getItem("employe_id");
   if (!employe_id) return;
 
-  const { data: ventes } = await supabase
-    .from("ventes")
-    .select("*")
-    .eq("utilisateur_id", employe_id);
+  const container = document.getElementById("contenu-dashboard");
+  container.innerHTML = "Chargement...";
 
-  const { data: crafts } = await supabase
-    .from("crafts")
-    .select("*")
-    .eq("utilisateur_id", employe_id);
+  try {
+    const res = await fetch(`https://test-stock-warner-backend.onrender.com/stats/${employe_id}`);
+    const stats = await res.json();
 
-  const totalVentes = ventes?.length || 0;
-  const totalProduits = ventes?.reduce((sum, v) => sum + (v.quantite_total || 0), 0);
-  const totalCrafts = crafts?.length || 0;
-
-  document.getElementById("stat-ventes").textContent = totalVentes;
-  document.getElementById("stat-produits").textContent = totalProduits;
-  document.getElementById("stat-crafts").textContent = totalCrafts;
+    container.innerHTML = `
+      <p><strong>Total ventes :</strong> ${stats.total_ventes} $</p>
+      <p><strong>Nombre de ventes :</strong> ${stats.nb_ventes}</p>
+      <p><strong>Produits vendus :</strong> ${stats.nb_produits}</p>
+      <p><strong>Nombre de craft :</strong> ${stats.nb_crafts}</p>
+    `;
+  } catch (e) {
+    container.innerHTML = "Erreur de chargement.";
+  }
 });
 
+// 🔙 Retour caisse
 btnRetour.addEventListener("click", () => {
   document.getElementById("dashboard-container").style.display = "none";
   document.getElementById("caisse-container").style.display = "block";
