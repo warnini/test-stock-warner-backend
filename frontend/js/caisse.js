@@ -16,7 +16,7 @@ const btnDashboard = document.getElementById("ouvrir-dashboard");
 const btnRetour = document.getElementById("retour-caisse");
 const btnAdmin = document.getElementById("ouvrir-admin");
 
-// 🧑 Connexion utilisateur
+// 🔐 Connexion utilisateur
 btnLogin.addEventListener("click", async () => {
   const pseudo = document.getElementById("login-pseudo").value.trim();
   const mot_de_passe = document.getElementById("login-mdp").value.trim();
@@ -26,24 +26,27 @@ btnLogin.addEventListener("click", async () => {
   const { data, error } = await supabase
     .from("utilisateurs")
     .select("*")
-    .eq("pseudo", pseudo)
-    .maybeSingle(); // Renvoie null si pas trouvé
+    .ilike("pseudo", pseudo);
 
-  if (error || !data) return alert("Utilisateur introuvable.");
-  if (data.mot_de_passe !== mot_de_passe) return alert("Mot de passe incorrect.");
+  if (error || !data || data.length === 0) return alert("Utilisateur introuvable.");
 
-  localStorage.setItem("employe_id", data.id);
-  localStorage.setItem("employe_role", data.role);
+  const utilisateur = data[0];
+
+  if (utilisateur.mot_de_passe !== mot_de_passe) return alert("Mot de passe incorrect.");
+
+  localStorage.setItem("employe_id", utilisateur.id);
+  localStorage.setItem("employe_role", utilisateur.role);
 
   document.getElementById("login-container").style.display = "none";
   document.getElementById("caisse-container").style.display = "block";
 
-  if (data.role === "admin") {
+  if (utilisateur.role === "admin") {
     btnAdmin.style.display = "inline-block";
   }
 
   chargerProduits();
 });
+
 
 // 🛒 Chargement des produits
 function chargerProduits() {
