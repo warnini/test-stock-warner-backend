@@ -5,6 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin - Gestion Stock YJ</title>
   <link rel="stylesheet" href="css/style.css" />
+  <style>
+/* === Encadré de section === */
+.panel-box {
+  background-color: #2a2a2a;
+  padding: 30px;
+  border-radius: 12px;
+  margin: 30px 0;
+  box-shadow: 0 0 12px rgba(0,0,0,0.3);
+}
+</style>
 </head>
 <body>
   <div id="top-bar">
@@ -28,39 +38,43 @@
     
 <h1>⚙️ Panneau d'administration</h1>
 
-<h2>Produits</h2>
-<table id="table-produits">
-  <thead>
-    <tr><th>ID</th><th>Nom</th><th>Prix</th><th>Stock</th><th>Actions</th></tr>
-  </thead>
-  <tbody></tbody>
-</table>
+<div class="panel-box">
+  <h2>Produits</h2>
+  <table id="table-produits">
+    <thead>
+      <tr><th>ID</th><th>Nom</th><th>Prix</th><th>Stock</th><th>Actions</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-<h3>Ajouter un produit</h3>
-<div class="form-inline">
-  <input id="produit-nom" placeholder="Nom" />
-  <input id="produit-prix" type="number" placeholder="Prix" />
-  <input id="produit-stock" type="number" placeholder="Stock" />
-  <button id="ajouter-produit">Ajouter</button>
+  <h3>Ajouter un produit</h3>
+  <div class="form-inline">
+    <input id="produit-nom" placeholder="Nom" />
+    <input id="produit-prix" type="number" placeholder="Prix" />
+    <input id="produit-stock" type="number" placeholder="Stock" />
+    <button id="ajouter-produit">Ajouter</button>
+  </div>
 </div>
 
-<h2>Utilisateurs</h2>
-<table id="table-utilisateurs">
-  <thead>
-    <tr><th>ID</th><th>Pseudo</th><th>Rôle</th><th>Actif</th><th>Actions</th></tr>
-  </thead>
-  <tbody></tbody>
-</table>
+<div class="panel-box">
+  <h2>Utilisateurs</h2>
+  <table id="table-utilisateurs">
+    <thead>
+      <tr><th>ID</th><th>Pseudo</th><th>Rôle</th><th>Actif</th><th>Actions</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-<h3>Ajouter un utilisateur</h3>
-<div class="form-inline">
-  <input id="user-pseudo" placeholder="Pseudo" />
-  <input id="user-mdp" placeholder="Mot de passe" />
-  <select id="user-role">
-    <option value="employe">Employé</option>
-    <option value="admin">Admin</option>
-  </select>
-  <button id="ajouter-utilisateur">Ajouter</button>
+  <h3>Ajouter un utilisateur</h3>
+  <div class="form-inline">
+    <input id="user-pseudo" placeholder="Pseudo" />
+    <input id="user-mdp" placeholder="Mot de passe" />
+    <select id="user-role">
+      <option value="employe">Employé</option>
+      <option value="admin">Admin</option>
+    </select>
+    <button id="ajouter-utilisateur">Ajouter</button>
+  </div>
 </div>
 
   </div>
