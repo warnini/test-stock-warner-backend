@@ -5,6 +5,7 @@ if (role !== "admin") {
 
 const api = "https://test-stock-warner-backend.onrender.com";
 
+// 🔽 Produits
 async function chargerProduits() {
   const res = await fetch(`${api}/admin/produits`);
   const produits = await res.json();
@@ -18,9 +19,13 @@ async function chargerProduits() {
       <td><input value="${p.nom}" onchange="modifierProduit(${p.id})" /></td>
       <td><input type="number" value="${p.prix_vente}" onchange="modifierProduit(${p.id})" /></td>
       <td><input type="number" value="${p.stock ?? 0}" onchange="modifierProduit(${p.id})" /></td>
-      <td><button onclick="supprimerProduit(${p.id})">❌</button></td>
+      <td><button class="btn-supprimer-produit" data-id="${p.id}">❌</button></td>
     `;
     tbody.appendChild(row);
+  });
+
+  document.querySelectorAll(".btn-supprimer-produit").forEach(btn => {
+    btn.addEventListener("click", () => supprimerProduit(btn.dataset.id));
   });
 }
 
@@ -39,6 +44,10 @@ async function ajouterProduit() {
     alert("Erreur lors de l'ajout du produit");
     return;
   }
+
+  document.getElementById("produit-nom").value = "";
+  document.getElementById("produit-prix").value = "";
+  document.getElementById("produit-stock").value = "";
 
   chargerProduits();
 }
@@ -63,6 +72,7 @@ async function supprimerProduit(id) {
   chargerProduits();
 }
 
+// 🔽 Utilisateurs
 async function chargerUtilisateurs() {
   const res = await fetch(`${api}/admin/utilisateurs`);
   const users = await res.json();
@@ -81,9 +91,13 @@ async function chargerUtilisateurs() {
         </select>
       </td>
       <td><input type="checkbox" ${u.actif ? "checked" : ""} onchange="modifierUtilisateur(${u.id})" /></td>
-      <td><button onclick="supprimerUtilisateur(${u.id})">❌</button></td>
+      <td><button class="btn-supprimer-utilisateur" data-id="${u.id}">❌</button></td>
     `;
     tbody.appendChild(row);
+  });
+
+  document.querySelectorAll(".btn-supprimer-utilisateur").forEach(btn => {
+    btn.addEventListener("click", () => supprimerUtilisateur(btn.dataset.id));
   });
 }
 
@@ -97,6 +111,10 @@ async function ajouterUtilisateur() {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ pseudo, mot_de_passe, role, actif: true }),
   });
+
+  document.getElementById("user-pseudo").value = "";
+  document.getElementById("user-mdp").value = "";
+  document.getElementById("user-role").value = "employe";
 
   chargerUtilisateurs();
 }
@@ -121,6 +139,7 @@ async function supprimerUtilisateur(id) {
   chargerUtilisateurs();
 }
 
+// 🔒 Déconnexion
 function logout() {
   localStorage.clear();
   window.location.href = "login.html";
@@ -139,6 +158,7 @@ document.addEventListener("click", (e) => {
   }
 });
 
+// 📦 Initialisation
 window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("ajouter-produit").addEventListener("click", ajouterProduit);
   document.getElementById("ajouter-utilisateur").addEventListener("click", ajouterUtilisateur);
