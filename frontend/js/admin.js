@@ -1,4 +1,3 @@
-// Vérifie que l'utilisateur est bien admin
 const role = localStorage.getItem("utilisateur_role");
 if (role !== "admin") {
   window.location.href = "login.html";
@@ -18,7 +17,7 @@ async function chargerProduits() {
       <td>${p.id}</td>
       <td><input value="${p.nom}" onchange="modifierProduit(${p.id})" /></td>
       <td><input type="number" value="${p.prix_vente}" onchange="modifierProduit(${p.id})" /></td>
-      <td><input type="number" value="${p.stock}" onchange="modifierProduit(${p.id})" /></td>
+      <td><input type="number" value="${p.stock ?? 0}" onchange="modifierProduit(${p.id})" /></td>
       <td><button onclick="supprimerProduit(${p.id})">❌</button></td>
     `;
     tbody.appendChild(row);
@@ -36,12 +35,17 @@ async function ajouterProduit() {
     body: JSON.stringify({ nom, prix_vente: prix, stock }),
   });
 
-  if (!res.ok) alert("Erreur lors de l'ajout du produit");
+  if (!res.ok) {
+    alert("Erreur lors de l'ajout du produit");
+    return;
+  }
+
   chargerProduits();
 }
 
 async function modifierProduit(id) {
-  const ligne = [...document.querySelectorAll("#table-produits tr")].find(tr => tr.children[0].textContent == id);
+  const ligne = [...document.querySelectorAll("#table-produits tbody tr")]
+    .find(tr => tr.children[0].textContent == id);
   const nom = ligne.children[1].querySelector("input").value;
   const prix_vente = parseFloat(ligne.children[2].querySelector("input").value);
   const stock = parseInt(ligne.children[3].querySelector("input").value);
@@ -98,7 +102,8 @@ async function ajouterUtilisateur() {
 }
 
 async function modifierUtilisateur(id) {
-  const ligne = [...document.querySelectorAll("#table-utilisateurs tbody tr")].find(tr => tr.children[0].textContent == id);
+  const ligne = [...document.querySelectorAll("#table-utilisateurs tbody tr")]
+    .find(tr => tr.children[0].textContent == id);
   const pseudo = ligne.children[1].querySelector("input").value;
   const role = ligne.children[2].querySelector("select").value;
   const actif = ligne.children[3].querySelector("input").checked;
@@ -115,6 +120,24 @@ async function supprimerUtilisateur(id) {
   await fetch(`${api}/admin/utilisateurs/${id}`, { method: "DELETE" });
   chargerUtilisateurs();
 }
+
+function logout() {
+  localStorage.clear();
+  window.location.href = "login.html";
+}
+
+const btnCompte = document.getElementById("btn-compte");
+const menuCompte = document.getElementById("menu-compte");
+
+btnCompte?.addEventListener("click", () => {
+  menuCompte.style.display = menuCompte.style.display === "none" ? "block" : "none";
+});
+
+document.addEventListener("click", (e) => {
+  if (!btnCompte.contains(e.target) && !menuCompte.contains(e.target)) {
+    menuCompte.style.display = "none";
+  }
+});
 
 window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("ajouter-produit").addEventListener("click", ajouterProduit);
