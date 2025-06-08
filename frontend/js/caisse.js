@@ -1,166 +1,102 @@
-import { createClient } from "https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm";
+// Récupération de l'ID utilisateur depuis le localStorage
+let utilisateur = JSON.parse(localStorage.getItem("utilisateur"));
 
-// 🔐 Supabase
-const supabase = createClient(
-  "https://jwydeurmndwzevsvpaql.supabase.co",
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp3eWRldXJtbmR3emV2c3ZwYXFsIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDkyNjI4NDgsImV4cCI6MjA2NDgzODg0OH0.CWvgdZ-wYOLYtGzZQA4U8R7leNwTEa9bfyU8wnx9TC0"
-);
-
-// 🎯 Sélecteurs
-const produitsContainer = document.getElementById("liste-produits");
-const totalElement = document.getElementById("total");
-const validerBtn = document.getElementById("valider-vente");
-const ajouterBtn = document.getElementById("ajouter-produit");
-const btnLogin = document.getElementById("btn-login");
-const btnDashboard = document.getElementById("ouvrir-dashboard");
-const btnRetour = document.getElementById("retour-caisse");
-const btnAdmin = document.getElementById("ouvrir-admin");
-
-// 🔐 Connexion utilisateur
-btnLogin.addEventListener("click", async () => {
-  const pseudo = document.getElementById("login-pseudo").value.trim();
-  const mot_de_passe = document.getElementById("login-mdp").value.trim();
-
-  if (!pseudo || !mot_de_passe) return alert("Veuillez remplir les deux champs.");
-
-  const { data, error } = await supabase
-    .from("utilisateurs")
-    .select("*")
-    .ilike("pseudo", pseudo);
-
-  if (error || !data || data.length === 0) return alert("Utilisateur introuvable.");
-
-  const utilisateur = data[0];
-
-  if (utilisateur.mot_de_passe !== mot_de_passe) return alert("Mot de passe incorrect.");
-
-  localStorage.setItem("employe_id", utilisateur.id);
-  localStorage.setItem("employe_role", utilisateur.role);
-
-  document.getElementById("login-container").style.display = "none";
-  document.getElementById("caisse-container").style.display = "block";
-
-  if (utilisateur.role === "admin") {
-    btnAdmin.style.display = "inline-block";
-  }
-
-  chargerProduits();
-});
-
-
-// 🛒 Chargement des produits
-function chargerProduits() {
-  fetch("https://test-stock-warner-backend.onrender.com/produits")
-    .then((res) => res.json())
-    .then((produits) => {
-      produitsContainer.innerHTML = "";
-      ajouterLigneProduit(produits);
-      ajouterBtn.onclick = () => ajouterLigneProduit(produits);
-    });
+if (!utilisateur) {
+  window.location.href = "/login.html";
 }
 
-// ➕ Ajouter une ligne produit
-function ajouterLigneProduit(produits) {
-  const div = document.createElement("div");
-  div.className = "ligne-produit";
+async function chargerProduits() {
+  const res = await fetch("/produits");
+  const produits = await res.json();
 
-  const select = document.createElement("select");
-  const input = document.createElement("input");
-  input.type = "number";
-  input.min = "0";
-  input.value = "0";
-
-  produits.forEach((p) => {
+  const select = document.getElementById("produit");
+  produits.forEach(p => {
     const option = document.createElement("option");
     option.value = p.id;
-    option.textContent = `${p.nom} (${p.prix} $)`;
-    option.dataset.prix = p.prix;
+    option.textContent = `${p.nom} - ${p.prix_vente} $`;
     select.appendChild(option);
   });
-
-  select.addEventListener("change", calculerTotal);
-  input.addEventListener("input", calculerTotal);
-
-  div.appendChild(select);
-  div.appendChild(input);
-  produitsContainer.appendChild(div);
-  calculerTotal();
 }
 
-// 💰 Calcul du total
-function calculerTotal() {
+let lignes = [];
+
+function ajouterLigne() {
+  const produitId = parseInt(document.getElementById("produit").value);
+  const quantite = parseInt(document.getElementById("quantite").value);
+
+  if (isNaN(produitId) || isNaN(quantite) || quantite <= 0) {
+    alert("Produit ou quantité invalide.");
+    return;
+  }
+
+  const produitNom = document.querySelector(`#produit option[value="${produitId}"]`).textContent;
+  const prixUnitaire = parseFloat(produitNom.split(" - ")[1]);
+
+  lignes.push({ id: produitId, nom: produitNom.split(" - ")[0], quantite, prixUnitaire });
+
+  afficherLignes();
+}
+
+function afficherLignes() {
+  const tbody = document.querySelector("#table-lignes tbody");
+  tbody.innerHTML = "";
   let total = 0;
-  produitsContainer.querySelectorAll(".ligne-produit").forEach((ligne) => {
-    const select = ligne.querySelector("select");
-    const input = ligne.querySelector("input");
-    const prix = parseFloat(select.selectedOptions[0].dataset.prix || 0);
-    total += prix * parseInt(input.value || 0);
+
+  lignes.forEach((l, i) => {
+    const ligne = document.createElement("tr");
+    ligne.innerHTML = `
+      <td>${l.nom}</td>
+      <td>${l.quantite}</td>
+      <td>${(l.quantite * l.prixUnitaire).toFixed(2)} $</td>
+      <td><button onclick="supprimerLigne(${i})">❌</button></td>
+    `;
+    tbody.appendChild(ligne);
+    total += l.quantite * l.prixUnitaire;
   });
-  totalElement.textContent = total.toFixed(2);
+
+  document.getElementById("total").textContent = `${total.toFixed(2)} $`;
 }
 
-// ✅ Enregistrement de la vente
-validerBtn.addEventListener("click", () => {
-  const employe_id = localStorage.getItem("employe_id");
-  if (!employe_id) return alert("Non connecté");
+function supprimerLigne(index) {
+  lignes.splice(index, 1);
+  afficherLignes();
+}
 
-  const produits = [];
-  produitsContainer.querySelectorAll(".ligne-produit").forEach((ligne) => {
-    const id = parseInt(ligne.querySelector("select").value);
-    const qte = parseInt(ligne.querySelector("input").value);
-    if (qte > 0) produits.push({ id, quantite: qte });
-  });
+async function validerVente() {
+  if (lignes.length === 0) {
+    alert("Aucun produit.");
+    return;
+  }
 
-  if (produits.length === 0) return alert("Sélectionnez au moins un produit");
+  const total = lignes.reduce((sum, l) => sum + l.quantite * l.prixUnitaire, 0);
 
-  const total = parseFloat(totalElement.textContent);
-
-  fetch("https://test-stock-warner-backend.onrender.com/vente", {
+  const res = await fetch("/vente", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ utilisateur_id: parseInt(employe_id), produits, total }),
-  })
-    .then((res) => res.json())
-    .then(() => {
-      alert("Vente enregistrée !");
-      produitsContainer.innerHTML = "";
-      chargerProduits();
-    });
-});
+    body: JSON.stringify({
+      utilisateur_id: utilisateur.id,
+      produits: lignes.map(l => ({ id: l.id, quantite: l.quantite })),
+      total,
+    }),
+  });
 
-// 📊 Statistiques personnelles
-btnDashboard.addEventListener("click", async () => {
-  document.getElementById("caisse-container").style.display = "none";
-  document.getElementById("dashboard-container").style.display = "block";
-
-  const employe_id = localStorage.getItem("employe_id");
-  if (!employe_id) return;
-
-  const container = document.getElementById("contenu-dashboard");
-  container.innerHTML = "Chargement...";
-
-  try {
-    const res = await fetch(`https://test-stock-warner-backend.onrender.com/stats/${employe_id}`);
-    const stats = await res.json();
-
-    container.innerHTML = `
-      <p><strong>Total ventes :</strong> ${stats.total_ventes} $</p>
-      <p><strong>Nombre de ventes :</strong> ${stats.nb_ventes}</p>
-      <p><strong>Produits vendus :</strong> ${stats.nb_produits}</p>
-      <p><strong>Nombre de craft :</strong> ${stats.nb_crafts}</p>
-    `;
-  } catch {
-    container.innerHTML = "Erreur de chargement.";
+  if (!res.ok) {
+    const err = await res.json();
+    return alert("Erreur : " + err.error);
   }
+
+  alert("Vente enregistrée !");
+  lignes = [];
+  afficherLignes();
+}
+
+// Gérer le bouton retour (sans déconnexion)
+document.getElementById("retour-admin")?.addEventListener("click", () => {
+  window.location.href = "/admin.html";
 });
 
-// 🔙 Retour à la caisse
-btnRetour.addEventListener("click", () => {
-  document.getElementById("dashboard-container").style.display = "none";
-  document.getElementById("caisse-container").style.display = "block";
-});
-
-// 🔐 Accès admin
-btnAdmin.addEventListener("click", () => {
-  window.location.href = "admin.html";
+window.addEventListener("DOMContentLoaded", () => {
+  chargerProduits();
+  document.getElementById("ajouter-ligne")?.addEventListener("click", ajouterLigne);
+  document.getElementById("valider-vente")?.addEventListener("click", validerVente);
 });
