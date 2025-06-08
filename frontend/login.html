@@ -7,22 +7,13 @@
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-
-  <!-- Layout commun -->
-  <div id="layout-container"></div>
-  <script>
-    fetch('layout.html')
-      .then(r => r.text())
-      .then(html => {
-        document.getElementById('layout-container').outerHTML = html;
-      });
-  </script>
-
   <div class="container">
-    <h1>Connexion</h1>
-    <input type="text" id="login-pseudo" placeholder="Pseudo" />
-    <input type="password" id="login-mdp" placeholder="Mot de passe" />
-    <button id="btn-login">Se connecter</button>
+    <h1>🔐 Connexion</h1>
+    <form class="form-card">
+      <input type="text" id="login-pseudo" placeholder="Pseudo" />
+      <input type="password" id="login-mdp" placeholder="Mot de passe" />
+      <button type="button" id="btn-login">Se connecter</button>
+    </form>
   </div>
 
   <script type="module" src="js/login.js"></script>
