@@ -1,19 +1,17 @@
-// Toggle affichage du menu déroulant
+// js/layout.js
 document.addEventListener("DOMContentLoaded", () => {
   const btnCompte = document.getElementById("btn-compte");
   const menuCompte = document.getElementById("menu-compte");
+  const btnDeconnexion = document.getElementById("btn-deconnexion");
 
   if (btnCompte && menuCompte) {
     btnCompte.addEventListener("click", () => {
-      menuCompte.style.display =
-        menuCompte.style.display === "block" ? "none" : "block";
+      menuCompte.classList.toggle("show");
     });
   }
 
-  // Déconnexion
-  const logoutBtn = document.getElementById("btn-logout");
-  if (logoutBtn) {
-    logoutBtn.addEventListener("click", () => {
+  if (btnDeconnexion) {
+    btnDeconnexion.addEventListener("click", () => {
       localStorage.clear();
       window.location.href = "login.html";
     });
