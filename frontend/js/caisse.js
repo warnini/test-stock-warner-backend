@@ -1,102 +1,86 @@
-// Récupération de l'ID utilisateur depuis le localStorage
-let utilisateur = JSON.parse(localStorage.getItem("utilisateur"));
-
-if (!utilisateur) {
-  window.location.href = "/login.html";
+// Vérifie si l'utilisateur est connecté
+const utilisateur_id = localStorage.getItem("utilisateur_id");
+if (!utilisateur_id) {
+  window.location.href = "login.html";
 }
 
-async function chargerProduits() {
-  const res = await fetch("/produits");
-  const produits = await res.json();
+const produitsContainer = document.getElementById("liste-produits");
+const totalElement = document.getElementById("total");
+const ajouterBtn = document.getElementById("ajouter-produit");
+const validerBtn = document.getElementById("valider-vente");
 
-  const select = document.getElementById("produit");
+let produits = [];
+let lignes = [];
+
+fetch("https://test-stock-warner-backend.onrender.com/produits")
+  .then(res => res.json())
+  .then(data => {
+    produits = data;
+    ajouterLigne();
+    ajouterBtn.addEventListener("click", ajouterLigne);
+  });
+
+function ajouterLigne() {
+  const ligne = document.createElement("div");
+  ligne.className = "ligne-produit";
+
+  const select = document.createElement("select");
+  const input = document.createElement("input");
+  input.type = "number";
+  input.min = "0";
+  input.value = "0";
+
   produits.forEach(p => {
     const option = document.createElement("option");
     option.value = p.id;
-    option.textContent = `${p.nom} - ${p.prix_vente} $`;
+    option.textContent = `${p.nom} (${p.prix_vente} $)`;
+    option.dataset.prix = p.prix_vente;
     select.appendChild(option);
   });
+
+  select.addEventListener("change", calculerTotal);
+  input.addEventListener("input", calculerTotal);
+
+  ligne.appendChild(select);
+  ligne.appendChild(input);
+  produitsContainer.appendChild(ligne);
+
+  calculerTotal();
 }
 
-let lignes = [];
-
-function ajouterLigne() {
-  const produitId = parseInt(document.getElementById("produit").value);
-  const quantite = parseInt(document.getElementById("quantite").value);
-
-  if (isNaN(produitId) || isNaN(quantite) || quantite <= 0) {
-    alert("Produit ou quantité invalide.");
-    return;
-  }
-
-  const produitNom = document.querySelector(`#produit option[value="${produitId}"]`).textContent;
-  const prixUnitaire = parseFloat(produitNom.split(" - ")[1]);
-
-  lignes.push({ id: produitId, nom: produitNom.split(" - ")[0], quantite, prixUnitaire });
-
-  afficherLignes();
-}
-
-function afficherLignes() {
-  const tbody = document.querySelector("#table-lignes tbody");
-  tbody.innerHTML = "";
+function calculerTotal() {
   let total = 0;
+  produitsContainer.querySelectorAll(".ligne-produit").forEach((ligne) => {
+    const select = ligne.querySelector("select");
+    const input = ligne.querySelector("input");
+    const prix = parseFloat(select.selectedOptions[0].dataset.prix || 0);
+    const qte = parseInt(input.value || 0);
+    total += prix * qte;
+  });
+  totalElement.textContent = total.toFixed(2);
+}
 
-  lignes.forEach((l, i) => {
-    const ligne = document.createElement("tr");
-    ligne.innerHTML = `
-      <td>${l.nom}</td>
-      <td>${l.quantite}</td>
-      <td>${(l.quantite * l.prixUnitaire).toFixed(2)} $</td>
-      <td><button onclick="supprimerLigne(${i})">❌</button></td>
-    `;
-    tbody.appendChild(ligne);
-    total += l.quantite * l.prixUnitaire;
+validerBtn.addEventListener("click", () => {
+  const lignes = [];
+  produitsContainer.querySelectorAll(".ligne-produit").forEach((ligne) => {
+    const id = parseInt(ligne.querySelector("select").value);
+    const qte = parseInt(ligne.querySelector("input").value);
+    if (qte > 0) lignes.push({ id, quantite: qte });
   });
 
-  document.getElementById("total").textContent = `${total.toFixed(2)} $`;
-}
+  if (lignes.length === 0) return alert("Veuillez sélectionner au moins un produit.");
 
-function supprimerLigne(index) {
-  lignes.splice(index, 1);
-  afficherLignes();
-}
+  const total = parseFloat(totalElement.textContent);
 
-async function validerVente() {
-  if (lignes.length === 0) {
-    alert("Aucun produit.");
-    return;
-  }
-
-  const total = lignes.reduce((sum, l) => sum + l.quantite * l.prixUnitaire, 0);
-
-  const res = await fetch("/vente", {
+  fetch("https://test-stock-warner-backend.onrender.com/vente", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      utilisateur_id: utilisateur.id,
-      produits: lignes.map(l => ({ id: l.id, quantite: l.quantite })),
-      total,
-    }),
-  });
-
-  if (!res.ok) {
-    const err = await res.json();
-    return alert("Erreur : " + err.error);
-  }
-
-  alert("Vente enregistrée !");
-  lignes = [];
-  afficherLignes();
-}
-
-// Gérer le bouton retour (sans déconnexion)
-document.getElementById("retour-admin")?.addEventListener("click", () => {
-  window.location.href = "/admin.html";
-});
-
-window.addEventListener("DOMContentLoaded", () => {
-  chargerProduits();
-  document.getElementById("ajouter-ligne")?.addEventListener("click", ajouterLigne);
-  document.getElementById("valider-vente")?.addEventListener("click", validerVente);
+    body: JSON.stringify({ utilisateur_id: parseInt(utilisateur_id), produits: lignes, total }),
+  })
+    .then((res) => res.json())
+    .then(() => {
+      alert("✅ Vente enregistrée !");
+      produitsContainer.innerHTML = "";
+      ajouterLigne();
+    });
 });
