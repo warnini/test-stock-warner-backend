@@ -5,56 +5,22 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dashboard - Gestion Stock YJ</title>
   <link rel="stylesheet" href="css/style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      background: url("https://i.imgur.com/Y7tRj2b.jpg") no-repeat center center fixed;
-      background-size: cover;
-      margin: 0;
-      padding: 0;
-    }
-
-    .container {
-      background: rgba(255, 255, 255, 0.95);
-      max-width: 600px;
-      margin: 50px auto;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-      text-align: center;
-    }
-
-    h1 {
-      margin-bottom: 30px;
-    }
-
-    .stats {
-      text-align: left;
-      font-size: 18px;
-      line-height: 1.6;
-    }
-
-    button {
-      background: #5a3e2b;
-      color: white;
-      padding: 10px 20px;
-      border: none;
-      border-radius: 8px;
-      margin-top: 30px;
-      cursor: pointer;
-    }
-
-    button:hover {
-      background: #3b271a;
-    }
-  </style>
 </head>
 <body>
+
+  <!-- Layout commun -->
+  <div id="layout-container"></div>
+  <script>
+    fetch('layout.html')
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById('layout-container').outerHTML = html;
+      });
+  </script>
+
   <div class="container">
-    <h1>Mes statistiques</h1>
-    <div id="stats" class="stats">Chargement...</div>
-    <button onclick="window.location.href='caisse.html'">Retour à la caisse</button>
+    <h1>Statistiques personnelles</h1>
+    <div id="contenu-dashboard">Chargement...</div>
   </div>
 
   <script type="module" src="js/dashboard.js"></script>
