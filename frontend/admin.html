@@ -7,19 +7,24 @@
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-
-  <!-- Layout commun -->
-  <div id="layout-container"></div>
-  <script>
-    fetch('layout.html')
-      .then(r => r.text())
-      .then(html => {
-        document.getElementById('layout-container').outerHTML = html;
-      });
-  </script>
+  <div id="top-bar">
+    <div id="menu-gauche">
+      <a href="caisse.html">🏪 Caisse</a>
+      <a href="dashboard.html">📊 Dashboard</a>
+      <a href="admin.html">⚙️ Admin</a>
+    </div>
+    <div id="menu-droite">
+      <div class="dropdown">
+        <button id="btn-compte">👤 Mon compte ▾</button>
+        <div id="menu-compte" class="dropdown-content">
+          <button id="btn-deconnexion">🔒 Déconnexion</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="container">
-    <h1>👑 Panneau d'administration</h1>
+    <h1>⚙️ Panneau d'administration</h1>
 
     <h2>Produits</h2>
     <table id="table-produits">
@@ -30,12 +35,14 @@
     </table>
 
     <h3>Ajouter un produit</h3>
-    <input id="produit-nom" placeholder="Nom" />
-    <input id="produit-prix" type="number" placeholder="Prix" />
-    <input id="produit-stock" type="number" placeholder="Stock" />
-    <button id="ajouter-produit">Ajouter</button>
+    <form class="form-card">
+      <input id="produit-nom" placeholder="Nom" />
+      <input id="produit-prix" type="number" placeholder="Prix" />
+      <input id="produit-stock" type="number" placeholder="Stock" />
+      <button id="ajouter-produit" type="button">Ajouter</button>
+    </form>
 
-    <hr />
+    <hr>
 
     <h2>Utilisateurs</h2>
     <table id="table-utilisateurs">
@@ -46,15 +53,18 @@
     </table>
 
     <h3>Ajouter un utilisateur</h3>
-    <input id="user-pseudo" placeholder="Pseudo" />
-    <input id="user-mdp" placeholder="Mot de passe" />
-    <select id="user-role">
-      <option value="employe">Employé</option>
-      <option value="admin">Admin</option>
-    </select>
-    <button id="ajouter-utilisateur">Ajouter</button>
+    <form class="form-card">
+      <input id="user-pseudo" placeholder="Pseudo" />
+      <input id="user-mdp" placeholder="Mot de passe" />
+      <select id="user-role">
+        <option value="employe">Employé</option>
+        <option value="admin">Admin</option>
+      </select>
+      <button id="ajouter-utilisateur" type="button">Ajouter</button>
+    </form>
   </div>
 
   <script type="module" src="js/admin.js"></script>
+  <script type="module" src="js/layout.js"></script>
 </body>
 </html>
