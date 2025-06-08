@@ -92,19 +92,34 @@ async function ajouterUtilisateur() {
   const mot_de_passe = document.getElementById("user-mdp").value;
   const role = document.getElementById("user-role").value;
 
-  if (!pseudo || !mot_de_passe || !role) return;
+  if (!pseudo || !mot_de_passe || !role) {
+    alert("Tous les champs doivent être remplis.");
+    return;
+  }
 
-  await fetch("/admin/utilisateurs", {
+  const response = await fetch("/admin/utilisateurs", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ pseudo, mot_de_passe, role }),
+    body: JSON.stringify({
+      pseudo,
+      mot_de_passe,
+      role,
+      actif: true // ✅ requis
+    }),
   });
 
-  document.getElementById("user-pseudo").value = "";
-  document.getElementById("user-mdp").value = "";
-  document.getElementById("user-role").value = "employe";
+  const result = await response.json();
 
-  chargerUtilisateurs();
+  if (response.ok) {
+    document.getElementById("user-pseudo").value = "";
+    document.getElementById("user-mdp").value = "";
+    document.getElementById("user-role").value = "employe";
+    chargerUtilisateurs();
+    alert("✅ Utilisateur ajouté avec succès.");
+  } else {
+    alert("❌ Erreur : " + result.error);
+    console.error("Erreur création utilisateur :", result);
+  }
 }
 
 async function modifierUtilisateur(id) {
@@ -120,7 +135,11 @@ async function modifierUtilisateur(id) {
   });
 }
 
-// Lier les boutons et charger les tableaux au chargement de la page
+async function supprimerUtilisateur(id) {
+  await fetch(`/admin/utilisateurs/${id}`, { method: "DELETE" });
+  chargerUtilisateurs();
+}
+
 window.addEventListener("DOMContentLoaded", () => {
   document.getElementById("ajouter-produit")?.addEventListener("click", ajouterProduit);
   document.getElementById("ajouter-utilisateur")?.addEventListener("click", ajouterUtilisateur);
