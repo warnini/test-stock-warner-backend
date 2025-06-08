@@ -18,34 +18,46 @@ body {
   max-width: 1000px;
 }
 
-/* === Sidebar verticale === */
+/* Sidebar verticale (refonte propre) */
 #top-bar {
   position: fixed;
   top: 0;
   left: 0;
   width: 200px;
   height: 100vh;
-  background-color: #2c2c2c;
+  background-color: #242424;
+  padding-top: 30px;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding-top: 30px;
+  gap: 20px;
   z-index: 1000;
+  border-right: 1px solid #333;
+}
+
+#menu-gauche {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  align-items: center;
 }
 
 #menu-gauche a {
   display: block;
-  color: #f0f0f0;
-  text-decoration: none;
-  padding: 15px 0;
-  width: 100%;
+  width: 90%;
   text-align: center;
-  transition: background 0.3s;
+  background-color: #333;
+  padding: 10px;
+  border-radius: 8px;
+  color: #fff;
+  font-weight: 500;
+  text-decoration: none;
+  transition: background 0.2s ease;
 }
 
 #menu-gauche a:hover {
-  background-color: #3e3e3e;
+  background-color: #555;
 }
+
 
 /* === Menu Compte (haut droit) === */
 #menu-droite {
@@ -163,3 +175,32 @@ button:hover {
     margin-top: 10px;
   }
 }
+
+.container h3 {
+  margin-top: 40px;
+  font-size: 18px;
+}
+
+.container .form-inline,
+.container form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+  justify-content: flex-start;
+}
+
+.container input,
+.container select {
+  background-color: #222;
+  color: white;
+  border: 1px solid #555;
+  padding: 8px 12px;
+  border-radius: 6px;
+}
+
+.container button {
+  margin-left: 0;
+}
+
