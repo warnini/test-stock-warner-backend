@@ -7,25 +7,31 @@
   <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-
-  <!-- Layout commun -->
-  <div id="layout-container"></div>
-  <script>
-    fetch('layout.html')
-      .then(r => r.text())
-      .then(html => {
-        document.getElementById('layout-container').outerHTML = html;
-      });
-  </script>
+  <div id="top-bar">
+    <div id="menu-gauche">
+      <a href="caisse.html">🏪 Caisse</a>
+      <a href="dashboard.html">📊 Dashboard</a>
+      <a href="admin.html">⚙️ Admin</a>
+    </div>
+    <div id="menu-droite">
+      <div class="dropdown">
+        <button id="btn-compte">👤 Mon compte ▾</button>
+        <div id="menu-compte" class="dropdown-content">
+          <button id="btn-deconnexion">🔒 Déconnexion</button>
+        </div>
+      </div>
+    </div>
+  </div>
 
   <div class="container">
-    <h1>Interface Caisse</h1>
+    <h1>🧾 Interface de caisse</h1>
     <div id="liste-produits"></div>
     <button id="ajouter-produit">+ Ajouter un produit</button>
-    <div class="total">Total: <span id="total">0</span> $</div>
+    <div class="total">Total : <span id="total">0.00</span> $</div>
     <button id="valider-vente">Valider la vente</button>
   </div>
 
   <script type="module" src="js/caisse.js"></script>
+  <script type="module" src="js/layout.js"></script>
 </body>
 </html>
