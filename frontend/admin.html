@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin - Gestion Stock YJ</title>
   <link rel="stylesheet" href="css/style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
     body {
       font-family: 'Roboto', sans-serif;
@@ -14,7 +13,6 @@
       margin: 0;
       padding: 0;
     }
-
     .container {
       background: rgba(255, 255, 255, 0.95);
       max-width: 1000px;
@@ -23,31 +21,22 @@
       border-radius: 15px;
       box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
     }
-
-    h1, h2, h3 {
-      text-align: center;
-      margin-bottom: 20px;
-    }
-
     table {
       width: 100%;
       border-collapse: collapse;
       margin-bottom: 15px;
     }
-
     th, td {
       border: 1px solid #ccc;
       padding: 8px;
       text-align: center;
     }
-
     input, select {
       width: 90%;
       padding: 6px;
       border-radius: 6px;
       border: 1px solid #ccc;
     }
-
     button {
       background: #5a3e2b;
       color: white;
@@ -55,79 +44,77 @@
       border: none;
       border-radius: 6px;
       cursor: pointer;
-      margin-top: 10px;
     }
-
     button:hover {
       background: #3b271a;
     }
-
     .form-inline input, .form-inline select {
       margin-right: 10px;
       margin-bottom: 10px;
     }
-
-    hr {
-      margin: 40px 0;
+    #menu-compte {
+      display: none;
+      position: absolute;
+      right: 10px;
+      background: white;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      padding: 8px;
+      top: 45px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
     }
   </style>
 </head>
 <body>
 
-  <div class="container">
-    <h1>👑 Panneau d'administration - Gestion Stock YJ</h1>
+<div style="text-align: right; padding: 10px; position: relative;">
+  <button id="btn-compte">👤 Mon compte ▾</button>
+  <div id="menu-compte">
+    <button onclick="logout()">🔒 Déconnexion</button>
+  </div>
+</div>
 
-    <!-- Section Produits -->
-    <section>
-      <h2>Produits</h2>
-      <table id="table-produits">
-        <thead>
-          <tr>
-            <th>ID</th><th>Nom</th><th>Prix</th><th>Stock</th><th>Actions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
+<div class="container">
+  <h1>👑 Panneau d'administration - Gestion Stock YJ</h1>
 
-      <h3>Ajouter un produit</h3>
-      <div class="form-inline">
-        <input id="produit-nom" placeholder="Nom">
-        <input id="produit-prix" type="number" placeholder="Prix">
-        <input id="produit-stock" type="number" placeholder="Stock">
-        <button id="ajouter-produit">Ajouter</button>
-      </div>
-    </section>
+  <h2>Produits</h2>
+  <table id="table-produits">
+    <thead>
+      <tr><th>ID</th><th>Nom</th><th>Prix</th><th>Stock</th><th>Actions</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
 
-    <hr>
-
-    <!-- Section Utilisateurs -->
-    <section>
-      <h2>Utilisateurs</h2>
-      <table id="table-utilisateurs">
-        <thead>
-          <tr>
-            <th>ID</th><th>Pseudo</th><th>Rôle</th><th>Actif</th><th>Actions</th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-
-      <h3>Ajouter un utilisateur</h3>
-      <div class="form-inline">
-        <input id="user-pseudo" placeholder="Pseudo">
-        <input id="user-mdp" placeholder="Mot de passe">
-        <select id="user-role">
-          <option value="employe">Employé</option>
-          <option value="admin">Admin</option>
-        </select>
-        <button id="ajouter-utilisateur">Ajouter</button>
-      </div>
-    </section>
-
-    <br>
-    <button onclick="window.location.href='login.html'">Déconnexion</button>
+  <h3>Ajouter un produit</h3>
+  <div class="form-inline">
+    <input id="produit-nom" placeholder="Nom">
+    <input id="produit-prix" type="number" placeholder="Prix">
+    <input id="produit-stock" type="number" placeholder="Stock">
+    <button id="ajouter-produit">Ajouter</button>
   </div>
 
-  <script type="module" src="js/admin.js"></script>
+  <hr>
+
+  <h2>Utilisateurs</h2>
+  <table id="table-utilisateurs">
+    <thead>
+      <tr><th>ID</th><th>Pseudo</th><th>Rôle</th><th>Actif</th><th>Actions</th></tr>
+    </thead>
+    <tbody></tbody>
+  </table>
+
+  <h3>Ajouter un utilisateur</h3>
+  <div class="form-inline">
+    <input id="user-pseudo" placeholder="Pseudo">
+    <input id="user-mdp" placeholder="Mot de passe">
+    <select id="user-role">
+      <option value="employe">Employé</option>
+      <option value="admin">Admin</option>
+    </select>
+    <button id="ajouter-utilisateur">Ajouter</button>
+  </div>
+</div>
+
+<script type="module" src="js/admin.js"></script>
 </body>
 </html>
