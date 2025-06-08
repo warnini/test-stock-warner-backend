@@ -144,6 +144,7 @@ function logout() {
   localStorage.clear();
   window.location.href = "login.html";
 }
+window.logout = logout; // rendre accessible à l'attribut onclick HTML
 
 const btnCompte = document.getElementById("btn-compte");
 const menuCompte = document.getElementById("menu-compte");
