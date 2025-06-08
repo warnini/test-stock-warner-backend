@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Admin - Gestion Stock YJ</title>
   <link rel="stylesheet" href="css/style.css" />
+  <title>Admin - Gestion Stock YJ</title>
 </head>
 <body>
   <div id="top-bar">
+    <!-- layout.js gère ce menu -->
     <div id="menu-gauche">
       <a href="caisse.html">🏪 Caisse</a>
       <a href="dashboard.html">📊 Dashboard</a>
@@ -22,7 +23,6 @@
       </div>
     </div>
   </div>
-
   <div class="container">
     <h1>⚙️ Panneau d'administration</h1>
 
@@ -35,14 +35,12 @@
     </table>
 
     <h3>Ajouter un produit</h3>
-    <form class="form-card">
+    <div class="form-inline">
       <input id="produit-nom" placeholder="Nom" />
       <input id="produit-prix" type="number" placeholder="Prix" />
       <input id="produit-stock" type="number" placeholder="Stock" />
-      <button id="ajouter-produit" type="button">Ajouter</button>
-    </form>
-
-    <hr>
+      <button id="ajouter-produit">Ajouter</button>
+    </div>
 
     <h2>Utilisateurs</h2>
     <table id="table-utilisateurs">
@@ -53,17 +51,16 @@
     </table>
 
     <h3>Ajouter un utilisateur</h3>
-    <form class="form-card">
+    <div class="form-inline">
       <input id="user-pseudo" placeholder="Pseudo" />
       <input id="user-mdp" placeholder="Mot de passe" />
       <select id="user-role">
         <option value="employe">Employé</option>
         <option value="admin">Admin</option>
       </select>
-      <button id="ajouter-utilisateur" type="button">Ajouter</button>
-    </form>
+      <button id="ajouter-utilisateur">Ajouter</button>
+    </div>
   </div>
-
   <script type="module" src="js/admin.js"></script>
   <script type="module" src="js/layout.js"></script>
 </body>
