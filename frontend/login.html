@@ -3,103 +3,67 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Caisse - Gestion Stock YJ</title>
-
-  <!-- Feuilles de style -->
-  <link rel="stylesheet" href="css/caisse.css" />
+  <title>Connexion - Gestion Stock YJ</title>
+  <link rel="stylesheet" href="css/style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
-
-  <!-- Supabase -->
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-
   <style>
     body {
       font-family: 'Roboto', sans-serif;
-      background: url('https://i.imgur.com/Y7tRj2b.jpg') no-repeat center center fixed;
+      background: url("https://i.imgur.com/Y7tRj2b.jpg") no-repeat center center fixed;
       background-size: cover;
       margin: 0;
       padding: 0;
     }
-    .container {
+
+    .login-container {
       background: rgba(255, 255, 255, 0.95);
-      max-width: 800px;
-      margin: 50px auto;
-      border-radius: 15px;
+      max-width: 400px;
+      margin: 100px auto;
       padding: 30px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.2);
-    }
-    h1 {
+      border-radius: 15px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
       text-align: center;
+    }
+
+    h1 {
+      font-size: 28px;
       margin-bottom: 20px;
     }
-    .ligne-produit {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 10px;
-    }
-    select, input[type="number"] {
-      flex: 1;
-      padding: 10px;
-      border-radius: 8px;
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
       border: 1px solid #ccc;
+      border-radius: 8px;
+      font-size: 16px;
     }
+
     button {
-      background: #444;
-      color: white;
-      padding: 10px 20px;
+      background-color: #5a3e2b;
+      color: #fff;
+      padding: 12px 20px;
       border: none;
       border-radius: 8px;
+      font-size: 16px;
       cursor: pointer;
-      transition: background 0.3s ease;
+      transition: background-color 0.3s ease;
+      width: 100%;
     }
+
     button:hover {
-      background: #222;
-    }
-    #ajouter-produit {
-      margin-bottom: 20px;
-    }
-    .total {
-      text-align: right;
-      font-size: 18px;
-      font-weight: bold;
-      margin-top: 20px;
+      background-color: #3b271a;
     }
   </style>
 </head>
 <body>
-
-  <!-- Page de connexion -->
-  <div id="login-container" class="container">
-    <h1>Connexion Employé</h1>
-    <input type="text" id="login-pseudo" placeholder="Pseudo">
-    <input type="password" id="login-mdp" placeholder="Mot de passe">
+  <div class="login-container">
+    <h1>Gestion Stock YJ</h1>
+    <input type="text" id="pseudo" placeholder="Votre pseudo" />
+    <input type="password" id="mdp" placeholder="Votre mot de passe" />
     <button id="btn-login">Se connecter</button>
   </div>
 
-  <!-- Interface de caisse -->
-  <div id="caisse-container" class="container" style="display: none;">
-    <h1>Interface de Caisse</h1>
-    <div id="liste-produits"></div>
-    <button id="ajouter-produit">+ Ajouter un produit</button>
-    <div class="total">Total: <span id="total">0</span> $</div>
-    <button id="valider-vente">Valider la vente</button>
-    <br><br>
-    <button id="ouvrir-dashboard">Voir mes statistiques</button>
-    <br><br>
-    <button id="ouvrir-admin" style="display: none;">Administration</button>
-  </div>
-
-  <!-- Interface Dashboard -->
-  <div id="dashboard-container" class="container" style="display: none;">
-    <h1>Mes Statistiques</h1>
-    <div id="contenu-dashboard">
-      <p>Chargement des données...</p>
-    </div>
-    <br>
-    <button id="retour-caisse">Retour à la caisse</button>
-  </div>
-
-  <!-- Script JS principal -->
-  <script type="module" src="js/caisse.js"></script>
+  <script type="module" src="js/login.js"></script>
 </body>
 </html>
