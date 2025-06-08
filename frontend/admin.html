@@ -52,7 +52,12 @@
       margin-right: 10px;
       margin-bottom: 10px;
     }
-    #menu-compte {
+    .dropdown {
+      text-align: right;
+      padding: 10px;
+      position: relative;
+    }
+    .dropdown-content {
       display: none;
       position: absolute;
       right: 10px;
@@ -67,9 +72,10 @@
 </head>
 <body>
 
-<div style="text-align: right; padding: 10px; position: relative;">
+<!-- Menu compte en haut à droite -->
+<div class="dropdown">
   <button id="btn-compte">👤 Mon compte ▾</button>
-  <div id="menu-compte">
+  <div id="menu-compte" class="dropdown-content">
     <button onclick="logout()">🔒 Déconnexion</button>
   </div>
 </div>
@@ -115,6 +121,7 @@
   </div>
 </div>
 
+<!-- Script JS -->
 <script type="module" src="js/admin.js"></script>
 </body>
 </html>
