@@ -5,123 +5,56 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin - Gestion Stock YJ</title>
   <link rel="stylesheet" href="css/style.css" />
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      background: url("https://i.imgur.com/Y7tRj2b.jpg") no-repeat center center fixed;
-      background-size: cover;
-      margin: 0;
-      padding: 0;
-    }
-    .container {
-      background: rgba(255, 255, 255, 0.95);
-      max-width: 1000px;
-      margin: 50px auto;
-      padding: 30px;
-      border-radius: 15px;
-      box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-bottom: 15px;
-    }
-    th, td {
-      border: 1px solid #ccc;
-      padding: 8px;
-      text-align: center;
-    }
-    input, select {
-      width: 90%;
-      padding: 6px;
-      border-radius: 6px;
-      border: 1px solid #ccc;
-    }
-    button {
-      background: #5a3e2b;
-      color: white;
-      padding: 8px 15px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-    }
-    button:hover {
-      background: #3b271a;
-    }
-    .form-inline input, .form-inline select {
-      margin-right: 10px;
-      margin-bottom: 10px;
-    }
-    .dropdown {
-      text-align: right;
-      padding: 10px;
-      position: relative;
-    }
-    .dropdown-content {
-      display: none;
-      position: absolute;
-      right: 10px;
-      background: white;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      padding: 8px;
-      top: 45px;
-      box-shadow: 0 0 10px rgba(0,0,0,0.1);
-    }
-  </style>
 </head>
 <body>
 
-<!-- Menu compte en haut à droite -->
-<div class="dropdown">
-  <button id="btn-compte">👤 Mon compte ▾</button>
-  <div id="menu-compte" class="dropdown-content">
-    <button onclick="logout()">🔒 Déconnexion</button>
-  </div>
-</div>
+  <!-- Layout commun -->
+  <div id="layout-container"></div>
+  <script>
+    fetch('layout.html')
+      .then(r => r.text())
+      .then(html => {
+        document.getElementById('layout-container').outerHTML = html;
+      });
+  </script>
 
-<div class="container">
-  <h1>👑 Panneau d'administration - Gestion Stock YJ</h1>
+  <div class="container">
+    <h1>👑 Panneau d'administration</h1>
 
-  <h2>Produits</h2>
-  <table id="table-produits">
-    <thead>
-      <tr><th>ID</th><th>Nom</th><th>Prix</th><th>Stock</th><th>Actions</th></tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+    <h2>Produits</h2>
+    <table id="table-produits">
+      <thead>
+        <tr><th>ID</th><th>Nom</th><th>Prix</th><th>Stock</th><th>Actions</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
 
-  <h3>Ajouter un produit</h3>
-  <div class="form-inline">
-    <input id="produit-nom" placeholder="Nom">
-    <input id="produit-prix" type="number" placeholder="Prix">
-    <input id="produit-stock" type="number" placeholder="Stock">
+    <h3>Ajouter un produit</h3>
+    <input id="produit-nom" placeholder="Nom" />
+    <input id="produit-prix" type="number" placeholder="Prix" />
+    <input id="produit-stock" type="number" placeholder="Stock" />
     <button id="ajouter-produit">Ajouter</button>
-  </div>
 
-  <hr>
+    <hr />
 
-  <h2>Utilisateurs</h2>
-  <table id="table-utilisateurs">
-    <thead>
-      <tr><th>ID</th><th>Pseudo</th><th>Rôle</th><th>Actif</th><th>Actions</th></tr>
-    </thead>
-    <tbody></tbody>
-  </table>
+    <h2>Utilisateurs</h2>
+    <table id="table-utilisateurs">
+      <thead>
+        <tr><th>ID</th><th>Pseudo</th><th>Rôle</th><th>Actif</th><th>Actions</th></tr>
+      </thead>
+      <tbody></tbody>
+    </table>
 
-  <h3>Ajouter un utilisateur</h3>
-  <div class="form-inline">
-    <input id="user-pseudo" placeholder="Pseudo">
-    <input id="user-mdp" placeholder="Mot de passe">
+    <h3>Ajouter un utilisateur</h3>
+    <input id="user-pseudo" placeholder="Pseudo" />
+    <input id="user-mdp" placeholder="Mot de passe" />
     <select id="user-role">
       <option value="employe">Employé</option>
       <option value="admin">Admin</option>
     </select>
     <button id="ajouter-utilisateur">Ajouter</button>
   </div>
-</div>
 
-<!-- Script JS -->
-<script type="module" src="js/admin.js"></script>
+  <script type="module" src="js/admin.js"></script>
 </body>
 </html>
