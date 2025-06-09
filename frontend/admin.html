@@ -26,7 +26,8 @@
       text-align: center;
     }
 
-    .recette-table input {
+    .recette-table input,
+    .recette-table select {
       width: 90%;
       padding: 6px;
     }
@@ -53,6 +54,7 @@
     <img src="https://i.imgur.com/TlAZWVE.png" alt="Logo Yellow Jack" style="max-width: 180px; margin-bottom: 20px;" />
     <h1>⚙️ Panneau d'administration</h1>
 
+    <!-- Produits -->
     <div class="panel-box">
       <h2>Produits</h2>
       <table id="table-produits">
@@ -68,6 +70,7 @@
       </div>
     </div>
 
+    <!-- Utilisateurs -->
     <div class="panel-box">
       <h2>Utilisateurs</h2>
       <table id="table-utilisateurs">
@@ -86,6 +89,7 @@
       </div>
     </div>
 
+    <!-- Ingrédients -->
     <div class="panel-box">
       <h2>Ingrédients</h2>
       <table id="table-ingredients">
@@ -100,6 +104,7 @@
       </div>
     </div>
 
+    <!-- Recettes -->
     <div class="panel-box">
       <h2>Recettes</h2>
       <table id="table-recettes">
@@ -107,7 +112,8 @@
         <tbody></tbody>
       </table>
       <h3>Ajouter une recette</h3>
-      <input id="recette-produit" placeholder="Nom du produit" style="margin-bottom: 10px;" />
+      <input id="recette-produit" placeholder="Nom du produit" style="margin-bottom: 10px; width: 48%;" />
+      <input id="recette-nb" type="number" min="1" placeholder="Nb produits" style="margin-bottom: 10px; width: 48%;" />
       <table class="recette-table">
         <thead>
           <tr><th>Ingrédient</th><th>Quantité</th><th>Action</th></tr>
