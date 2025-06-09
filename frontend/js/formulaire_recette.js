@@ -7,7 +7,6 @@ const supabase = createClient(
 
 let listeIngredients = [];
 
-// 🔄 Charge les ingrédients depuis Supabase
 async function chargerIngredientsDisponibles() {
   const { data, error } = await supabase.from("ingredients").select("nom").order("nom", { ascending: true });
   if (error) {
@@ -15,10 +14,9 @@ async function chargerIngredientsDisponibles() {
     return;
   }
   listeIngredients = data.map(item => item.nom);
-  ajouterLigne(); // Ajoute une première ligne une fois les ingrédients prêts
+  ajouterLigne();
 }
 
-// ➕ Ajoute une ligne de recette
 function ajouterLigne() {
   const tbody = document.getElementById("recette-lignes");
   const tr = document.createElement("tr");
@@ -40,9 +38,9 @@ function ajouterLigne() {
   tbody.appendChild(tr);
 }
 
-// ✅ Valide la recette et l'envoie vers Supabase
 async function validerRecette() {
   const produit = document.getElementById("recette-produit").value.trim();
+  const nbProduits = parseInt(document.getElementById("recette-nb").value.trim(), 10);
   const lignes = document.querySelectorAll("#recette-lignes tr");
 
   const ingredients = [];
@@ -57,27 +55,28 @@ async function validerRecette() {
     }
   });
 
-  if (!produit || ingredients.length === 0 || ingredients.length !== quantites.length) {
-    alert("Veuillez remplir tous les champs de manière cohérente.");
+  if (!produit || isNaN(nbProduits) || nbProduits <= 0 || ingredients.length === 0 || ingredients.length !== quantites.length) {
+    alert("Veuillez remplir tous les champs correctement.");
     return;
   }
 
-  const { error } = await supabase.from("recettes").insert([{ produit, ingredients, quantites }]);
+  const { error } = await supabase.from("recettes").insert([
+    { produit, nb_produits: nbProduits, ingredients, quantites }
+  ]);
 
   if (error) {
-    console.error("Erreur lors de l'envoi Supabase :", error);
-    alert("Échec lors de l'ajout de la recette.");
+    console.error("Erreur Supabase :", error);
+    alert("Erreur lors de l'ajout de la recette.");
   } else {
     alert("Recette ajoutée !");
     document.getElementById("recette-produit").value = "";
+    document.getElementById("recette-nb").value = "";
     document.getElementById("recette-lignes").innerHTML = "";
     ajouterLigne();
   }
 }
 
-// 🎯 Événements
 document.getElementById("ajouter-ligne-recette").addEventListener("click", ajouterLigne);
 document.getElementById("valider-recette").addEventListener("click", validerRecette);
 
-// Lancer le chargement au démarrage
 chargerIngredientsDisponibles();
