@@ -13,6 +13,23 @@
       margin: 30px 0;
       box-shadow: 0 0 12px rgba(0,0,0,0.3);
     }
+
+    .recette-table {
+      width: 100%;
+      margin-bottom: 20px;
+    }
+
+    .recette-table th, .recette-table td {
+      padding: 10px;
+      background: #222;
+      border: 1px solid #555;
+      text-align: center;
+    }
+
+    .recette-table input {
+      width: 90%;
+      padding: 6px;
+    }
   </style>
 </head>
 <body>
@@ -90,8 +107,13 @@
         <tbody></tbody>
       </table>
       <h3>Ajouter une recette</h3>
-      <input id="recette-produit" placeholder="Nom du produit" />
-      <div id="recette-lignes"></div>
+      <input id="recette-produit" placeholder="Nom du produit" style="margin-bottom: 10px;" />
+      <table class="recette-table">
+        <thead>
+          <tr><th>Ingrédient</th><th>Quantité</th><th>Action</th></tr>
+        </thead>
+        <tbody id="recette-lignes"></tbody>
+      </table>
       <button id="ajouter-ligne-recette" type="button">+ Ajouter ligne</button>
       <button id="valider-recette" type="button">✅ Valider la recette</button>
     </div>
@@ -100,8 +122,8 @@
   <script type="module" src="js/admin.js"></script>
   <script type="module" src="js/layout.js"></script>
   <script type="module" src="js/ajout_ingredient_admin.js"></script>
-  <script type="module" src="js/formulaire_recette.js"></script>
   <script type="module" src="js/afficher_ingredients.js"></script>
   <script type="module" src="js/afficher_recettes.js"></script>
+  <script type="module" src="js/formulaire_recette.js"></script>
 </body>
 </html>
